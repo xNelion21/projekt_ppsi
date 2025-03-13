@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\task-manager",
+    "\\task-manager\\src",
+    "\\task-manager\\src\\main",
+    "\\task-manager\\src\\main\\resources",
+    "\\task-manager\\src\\test",
+    "\\task-manager\\src\\test\\java",
+    "\\task-manager\\src\\test\\java\\com",
+    "\\task-manager\\src\\test\\java\\com\\calendarProject",
+    "\\task-manager\\src\\test\\java\\com\\calendarProject\\task_manager"
+  ],
+  "SelectedNode": "\\task-manager\\src\\test\\java\\com\\calendarProject\\task_manager\\TaskManagerApplicationTests.java",
+  "PreviewInSolutionExplorer": false
+}
