@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Projekt - Task Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- Wstawienie navbar z pliku navbar.html -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- Główna zawartość strony wstawiana z innych plików -->
+<div th:fragment="content">
+    <!-- Zawartość będzie tutaj wstawiana -->
+
+
+
+</div>
+
+<!-- Wstawienie fragmentu czatu -->
+<div th:replace="fragments/chat :: chat"></div>
+
+<!-- Wstawienie dodatkowych skryptów -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+<nav th:fragment="nav">
+    <a href="/">🏠 Dashboard</a>
+    <a href="/to-do">✅ To-Do List</a>
+    <a href="/calendar">📅 Kalendarz</a>
+    <a href="/inbox">📬 Skrzynka</a>
+    <a href="/notifications">🔔 Powiadomienia</a>
+    <a href="/settings">⚙️ Ustawienia</a>
+</nav>
+
+<div class="chat-sidebar" id="chatSidebar">
+    <div class="chat-header">
+        <span>Czat zespołowy</span>
+        <button onclick="toggleChat()">✖</button>
+    </div>
+    <div class="chat-messages">
+        <p><strong>Adam:</strong> Hej, jak idzie projekt?</p>
+        <p><strong>Ty:</strong> Całkiem spoko, kończę interfejs.</p>
+    </div>
+    <input type="text" id="chatInput" placeholder="Napisz wiadomość..." onkeypress="sendMessage(event)">
+</div>
