@@ -1,0 +1,178 @@
+:root {
+    --bs-body-font-family: 'Lato', sans-serif;
+}
+
+.main-btn {
+    font-size: 1.7rem;
+    background-color: #f0ad4e;
+    border-color: #eea236;
+    padding: 15px;
+}
+
+.main-btn:hover {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    background-color: #e68a00;
+    transform: scale(1.05);
+
+}
+
+.btn-nav {
+    font-size: 1.7rem;
+    background-color: #f0ad4e;
+    border-color: #eea236;
+    border-radius: 15px;
+}
+
+.btn-nav:hover {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    background-color: #e68a00;
+    transform: scale(1.05);
+}
+
+.navbar-nav .nav-link {
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: #ffcc00;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+.custom-btn {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 2rem;
+    margin-left: 5px;
+}
+
+.container-custom {
+    max-width: 100%;
+}
+
+.steps_section-thumbnail {
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+
+    .steps_content-width {
+        padding-left: 15px; /* Adds internal padding to the text area */
+    }
+}
+
+.steps_content-width {
+    max-width: 456px;
+    margin: 0 auto;
+}
+
+.box-area{
+    width: 930px;
+}
+
+
+/* Login Page */
+
+.login-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/background.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.4;
+    z-index: -1;
+}
+
+.register-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/background.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.4;
+    z-index: -1;
+}
+
+.container {
+    max-width: 1400px; /* Increase the overall width of the container */
+}
+
+.box-area {
+    padding: 4rem; /* Add larger padding to create a roomier feel */
+}
+
+.left-box img {
+    width: 300px; /* Scale up the image */
+}
+
+.left-box p {
+    font-size: 2.5rem; /* Increase the size of the heading */
+}
+
+.btn-login {
+    background-color: #FFC107; /* Jaśniejszy żółty */
+    border: 2px solid #FF8C00; /* Kontrastująca ramka */
+    text-transform: uppercase;
+    border-radius: 50px; /* Zaokrąglone rogi */
+    transition: transform 0.3s, box-shadow 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+}
+
+.btn-login:hover {
+    background-color: #FF8C00; /* Ciemniejszy kolor po najechaniu */
+    transform: scale(1.05); /* Powiększenie przycisku */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Mocniejszy cień */
+}
+
+.btn-login:active {
+    transform: scale(0.95); /* Wrażenie kliknięcia */
+}
+
+@media (min-width: 992px) {
+    .box-area {
+        padding: 5rem; /* Add spacious padding for large screens */
+        transform: scale(1.1); /* Slight scaling for larger screens */
+    }
+
+    .left-box img {
+        width: 300px; /* Larger image size */
+    }
+
+    .left-box p {
+        font-size: 2.5rem; /* Enhance the heading for large screens */
+    }
+
+    .left-box small {
+        font-size: 1.5rem; /* Larger supporting text size */
+    }
+
+    .right-box .header-text {
+        font-size: 2.2rem; /* Bold and noticeable header */
+    }
+
+    .btn-login {
+        font-size: 1.8rem; /* Larger, standout button */
+        padding: 1rem 1.5rem; /* Add padding to the button */
+    }
+}
