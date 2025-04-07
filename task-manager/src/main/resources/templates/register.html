@@ -26,11 +26,13 @@
         <div class="row border rounded-5 p-3 bg-white shadow box-area">
 
             <!-- Right Box (Form Section) -->
+            <div th:if="${error}" th:text="${error}" style="color: red;"></div>
             <div class="col-md-6 right-box order-2 order-md-1">
                 <div class="row align-items-center">
                     <p class="header-text mb-4 text-center fw-bold fs-3 mt-3">Rejestracja</p>
                 </div>
-                <form>
+
+                <form action="/register" method="POST">
                     <div class="input-group mb-3 mt-2">
                         <label for="email" class="visually-hidden">Email</label>
                         <input type="text" id="email" name="email" class="form-control form-control-lg bg-light fs-6" placeholder="Email" required>
@@ -49,9 +51,12 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <button class="btn btn-lg btn-warning w-100 fs-5 text-white fw-bold btn-login">Załóż konto</button>
+                        <button type="submit" class="btn btn-lg btn-warning w-100 fs-5 text-white fw-bold btn-login">Załóż konto</button>
                     </div>
                 </form>
+
+
+
             </div>
 
             <!-- Left Box (Image and Promo Section) -->
