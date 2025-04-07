@@ -11,10 +11,6 @@ public class MainController {
         return "index";  // Nazwa szablonu, np. index.html
     }
 
-    @GetMapping("/register")
-    public String registerPage() {
-        return "register";
-    }
 
     @GetMapping("/loginpage")
     public String loginPage() {
