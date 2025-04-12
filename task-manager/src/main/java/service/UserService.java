@@ -25,10 +25,17 @@ public class UserService {
         userRepository.save(newUser);
     }
 
-    // ⬇⬇⬇ TE DWIE METODY DODAJ ⬇⬇⬇
+
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
     public boolean checkPassword(User user, String rawPassword) {

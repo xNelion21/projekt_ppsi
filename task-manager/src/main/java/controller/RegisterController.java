@@ -1,12 +1,13 @@
 package controller;
 
+import model.User;
 import service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class RegisterController {
@@ -14,20 +15,24 @@ public class RegisterController {
     @Autowired
     private UserService userService;
 
-    // Obsługuje GET request, wyświetlając formularz rejestracji
+
     @GetMapping("/register")
-    public ModelAndView showRegistrationForm() {
-        return new ModelAndView("register");  // Nazwa widoku rejestracji (HTML)
+    public String showRegistrationForm() {
+        return "register";
     }
 
-    // Obsługuje POST request, rejestrując użytkownika
+
     @PostMapping("/register")
-    public String registerUser(@RequestParam String email, @RequestParam String password) {
-        try {
-            userService.registerUser(email, password);
-            return "redirect:/index.html";  // Przekierowanie na stronę index
-        } catch (Exception e) {
-            return "register";  // Zwrócenie formularza rejestracji w przypadku błędu
+    public String registerUser(@RequestParam String email, @RequestParam String password, Model model) {
+
+        if (userService.findByEmail(email) != null) {
+            model.addAttribute("error", "Użytkownik o tym e-mailu już istnieje.");
+            return "register";
         }
+
+        // Tworzenie nowego użytkownika
+        User user = new User(email, password);
+        userService.saveUser(user);
+        return "redirect:/login";
     }
 }

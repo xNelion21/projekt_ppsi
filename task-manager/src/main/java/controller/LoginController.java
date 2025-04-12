@@ -21,16 +21,17 @@ public class LoginController {
         User user = userService.getUserByEmail(email);
 
         if (user != null && userService.checkPassword(user, password)) {
+            System.out.println("Zalogowany użytkownik: " + user.getEmail());
             session.setAttribute("user", user); // zapis do sesji
-            return "redirect:/"; // zalogowany -> strona główna
+            return "redirect:/index"; // zalogowany -> strona główna
         } else {
-            return "loginpage"; // możesz dodać informację o błędzie
+            return "redirect:/loginpage?error=true";
         }
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate(); // wylogowanie
-        return "redirect:/";
+        return "redirect:/loginpage";
     }
 }
