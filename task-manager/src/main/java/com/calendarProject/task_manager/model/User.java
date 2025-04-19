@@ -1,4 +1,4 @@
-package model;
+package com.calendarProject.task_manager.model;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;

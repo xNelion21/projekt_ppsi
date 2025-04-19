@@ -1,6 +1,6 @@
-package repository;
+package com.calendarProject.task_manager.repository;
 
-import model.User;
+import com.calendarProject.task_manager.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -61,9 +61,10 @@
                     <div class="forgot">
                         <a th:href="@{/}">Nie pamiętasz hasła?</a>
                     </div>
-                    <div th:if="${param.error}">
-                        <p style="color: red;">Nieprawidłowy e-mail lub hasło.</p>
+                    <div th:if="${error}">
+                        <p style="color: red;" th:text="${error}"></p>
                     </div>
+
 
                 </div>
                 <div class="input-group mb-3">

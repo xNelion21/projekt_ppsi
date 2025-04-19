@@ -1,11 +1,12 @@
-package controller;
+package com.calendarProject.task_manager.controller;
 
+import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
-import model.User;
+import com.calendarProject.task_manager.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import service.UserService;
+import com.calendarProject.task_manager.service.UserService;
 
 @Controller
 public class LoginController {
@@ -29,9 +30,30 @@ public class LoginController {
         }
     }
 
+    @GetMapping("/index")
+    public String home(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("user", user);
+        return "index";
+    }
+
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate(); // wylogowanie
         return "redirect:/loginpage";
     }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "loginpage"; // == templates/loginpage.html
+    }
+
+    @GetMapping("/")
+    public String rootRedirect() {
+        return "redirect:/index";
+    }
+
 }

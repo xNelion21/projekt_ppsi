@@ -1,9 +1,10 @@
-package service;
+package com.calendarProject.task_manager.service;
 
-import model.User;
-import repository.UserRepository;
+import com.calendarProject.task_manager.model.User;
+import com.calendarProject.task_manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +14,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;  // BCrypt do szyfrowania haseł
+    private PasswordEncoder passwordEncoder;  // BCrypt do szyfrowania haseł
 
     public void registerUser(String email, String password) {
         if (userRepository.findByEmail(email) != null) {
