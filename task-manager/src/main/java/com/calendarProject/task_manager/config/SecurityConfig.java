@@ -1,8 +1,10 @@
 package com.calendarProject.task_manager.config;
 
-import com.calendarProject.task_manager.model.User;
+
+import com.calendarProject.task_manager.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,40 +15,34 @@ import com.calendarProject.task_manager.repository.UserRepository;
 
 @Configuration
 public class SecurityConfig {
-
     private final UserRepository userRepository;
 
     public SecurityConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    // Użytkownik DetailsService bez implementacji interfejsu
+
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> {
-            // Ładowanie użytkownika z bazy danych
-            User user = userRepository.findByEmail(username);
-            if (user == null) {
-                throw new UsernameNotFoundException("User not found with email: " + username);
-            }
-            return user;
-        };
+        return new CustomUserDetailsService(userRepository);
     }
 
-    // Konfiguracja bezpieczeństwa bez przestarzałych metod
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())  // <-- wyłącz ochronę CSRF
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/register", "/login", "/loginpage").permitAll() // Pozwól na dostęp do stron rejestracji i logowania
-                        .anyRequest().authenticated() // Reszta stron wymaga zalogowania
+                        .requestMatchers("/register", "/register", "/loginpage", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                        .anyRequest().permitAll() // Podmienilam narazie bo wywala 403
                 )
-                .formLogin(form -> form
+          /*  .formLogin(form -> form
                         .loginPage("/loginpage") // Strona logowania
                         .loginProcessingUrl("/login") // URL do obsługi logowania
                         .defaultSuccessUrl("/index", true) // Po udanym logowaniu przekierowanie
                         .permitAll() // Zezwól na dostęp do strony logowania
-                )
+                ) */
                 .logout(logout -> logout
                         .logoutUrl("/logout")  // URL dla wylogowania
                         .permitAll() // Zezwól na dostęp do strony wylogowywania

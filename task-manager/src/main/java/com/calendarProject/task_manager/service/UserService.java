@@ -7,14 +7,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
-    private PasswordEncoder passwordEncoder;  // BCrypt do szyfrowania haseł
+    private PasswordEncoder passwordEncoder;
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
 
     public void registerUser(String email, String password) {
         if (userRepository.findByEmail(email) != null) {
@@ -23,7 +28,7 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(password);
         User newUser = new User(email, encodedPassword);
-        userRepository.save(newUser);
+        saveUser(newUser);
     }
 
 

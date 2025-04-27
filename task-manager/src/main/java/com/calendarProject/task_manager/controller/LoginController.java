@@ -1,5 +1,4 @@
 package com.calendarProject.task_manager.controller;
-
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
 import com.calendarProject.task_manager.model.User;
@@ -34,7 +33,7 @@ public class LoginController {
     public String home(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/loginpage";
         }
         model.addAttribute("user", user);
         return "index";
@@ -46,10 +45,6 @@ public class LoginController {
         return "redirect:/loginpage";
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "loginpage"; // == templates/loginpage.html
-    }
 
     @GetMapping("/")
     public String rootRedirect() {
