@@ -13,7 +13,6 @@
     transition: background-color 0.3s ease, transform 0.2s ease;
     background-color: #e68a00;
     transform: scale(1.05);
-
 }
 
 .btn-nav {
@@ -66,9 +65,8 @@
 }
 
 @media (min-width: 576px) and (max-width: 991px) {
-
     .steps_content-width {
-        padding-left: 15px; /* Adds internal padding to the text area */
+        padding-left: 15px;
     }
 }
 
@@ -77,12 +75,9 @@
     margin: 0 auto;
 }
 
-.box-area{
+.box-area {
     width: 930px;
 }
-
-
-/* Login Page */
 
 .login-page::before {
     content: '';
@@ -115,64 +110,64 @@
 }
 
 .container {
-    max-width: 1400px; /* Increase the overall width of the container */
+    max-width: 1400px;
 }
 
 .box-area {
-    padding: 4rem; /* Add larger padding to create a roomier feel */
+    padding: 4rem;
 }
 
 .left-box img {
-    width: 300px; /* Scale up the image */
+    width: 300px;
 }
 
 .left-box p {
-    font-size: 2.5rem; /* Increase the size of the heading */
+    font-size: 2.5rem;
 }
 
 .btn-login {
-    background-color: #FFC107; /* Jaśniejszy żółty */
-    border: 2px solid #FF8C00; /* Kontrastująca ramka */
+    background-color: #FFC107;
+    border: 2px solid #FF8C00;
     text-transform: uppercase;
-    border-radius: 50px; /* Zaokrąglone rogi */
+    border-radius: 50px;
     transition: transform 0.3s, box-shadow 0.3s ease-in-out;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-login:hover {
-    background-color: #FF8C00; /* Ciemniejszy kolor po najechaniu */
-    transform: scale(1.05); /* Powiększenie przycisku */
-    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Mocniejszy cień */
+    background-color: #FF8C00;
+    transform: scale(1.05);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
 }
 
 .btn-login:active {
-    transform: scale(0.95); /* Wrażenie kliknięcia */
+    transform: scale(0.95);
 }
 
 @media (min-width: 992px) {
     .box-area {
-        padding: 5rem; /* Add spacious padding for large screens */
-        transform: scale(1.1); /* Slight scaling for larger screens */
+        padding: 5rem;
+        transform: scale(1.1);
     }
 
     .left-box img {
-        width: 300px; /* Larger image size */
+        width: 300px;
     }
 
     .left-box p {
-        font-size: 2.5rem; /* Enhance the heading for large screens */
+        font-size: 2.5rem;
     }
 
     .left-box small {
-        font-size: 1.5rem; /* Larger supporting text size */
+        font-size: 1.5rem;
     }
 
     .right-box .header-text {
-        font-size: 2.2rem; /* Bold and noticeable header */
+        font-size: 2.2rem;
     }
 
     .btn-login {
-        font-size: 1.8rem; /* Larger, standout button */
-        padding: 1rem 1.5rem; /* Add padding to the button */
+        font-size: 1.8rem;
+        padding: 1rem 1.5rem;
     }
 }

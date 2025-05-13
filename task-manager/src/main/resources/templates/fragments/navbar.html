@@ -11,10 +11,8 @@
 <body>
 <nav th:fragment="navbar" class="navbar navbar-expand-lg bg-light navbar-light py-3 sticky-top">
     <div class="container">
-        <!-- Logo lub nazwa strony -->
         <a th:href="@{/}" class="navbar-brand text-dark fs-2 fw-bold">Taskify</a>
 
-        <!-- Przyciski nawigacyjne dla urządzeń mobilnych -->
         <button
                 class="navbar-toggler"
                 type="button"
@@ -23,10 +21,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Główne menu -->
         <div class="collapse navbar-collapse" id="navmenu">
             <ul class="navbar-nav ms-auto">
-                <!-- Linki do różnych sekcji -->
+
                 <li class="nav-item">
                     <a th:href="@{/}" class="nav-link fs-4">Funkcje</a>
                 </li>
@@ -34,15 +31,13 @@
                     <a th:href="@{/}" class="nav-link fs-4">O nas</a>
                 </li>
                 <li class="nav-item">
-                    <a th:href="@{/}" class="nav-link fs-4">Kontakt</a>
+                    <a th:href="@{/contact}" class="nav-link fs-4">Kontakt</a>
                 </li>
 
-                <!-- Separator w menu -->
                 <li class="nav-item">
                     <a class="nav-link fs-4 d-none d-lg-block">|</a>
                 </li>
 
-                <!-- Linki do logowania/rejestracji -->
                 <li class="nav-item">
                     <a th:href="@{/loginpage}" class="nav-link btn-outline-dark fs-4" role="button">Zaloguj się</a>
                 </li>
@@ -54,7 +49,6 @@
     </div>
 </nav>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
