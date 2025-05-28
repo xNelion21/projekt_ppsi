@@ -1,47 +1,79 @@
-<script setup>
-
-import AddTaskModal from "@/components/AddTaskModal.vue";
-import Sidebar from "@/components/Sidebar.vue";
-import {ref} from "vue";
-
-const isSidebarOpen = ref(true);
-
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-};
-
-</script>
-
 <template>
   <div class="container-fluid d-flex flex-column h-100" :class="{ 'sidebar-open': isSidebarOpen }">
-    <div class="row h-100"> <div class="col-auto p-0 app-sidebar-col">
-      <Sidebar :toggleSidebar="toggleSidebar" />
-    </div>
+    <div class="row h-100">
+      <div class="col-auto p-0 app-sidebar-col">
+        <Sidebar :toggleSidebar="toggleSidebar" />
+      </div>
 
       <div class="col p-0 main-content-col">
         <div class="p-2 simple-toggle-button-container">
-          <button class="btn btn-sidebar" @click="toggleSidebar"> <i class="bi bi-layout-sidebar"></i></button>
+          <button class="btn btn-sidebar" @click="toggleSidebar">
+            <i class="bi bi-layout-sidebar"></i>
+          </button>
         </div>
 
-        <main class="h-100"> <div class="p-4 h-100-content"> <router-view />
-        </div>
+        <main class="h-100">
+          <div class="p-4 h-100-content">
+
+            <router-view />
+            <p>Jeśli to widzisz, router działa</p>
+          </div>
         </main>
 
         <AddTaskModal @taskAdded="addTask" />
-
+        <p>Jeśli to widzisz, router działa</p>
       </div>
     </div>
   </div>
 
-  <div class="overlay d-md-none" :class="{ 'show': isSidebarOpen }" @click="toggleSidebar"></div>
-
+  <div
+      class="overlay d-md-none"
+      :class="{ 'show': isSidebarOpen }"
+      @click="toggleSidebar"
+  ></div>
 </template>
 
-<style>
+<script>
+import { ref } from 'vue';
+import AddTaskModal from '@/components/AddTaskModal.vue'; // Corrected import path
+import Sidebar from '@/components/Sidebar.vue'; // Corrected import path
 
-html, body, #app, .container-fluid, .row {
+export default {
+  components: {
+    AddTaskModal,
+    Sidebar,
+  },
+  setup() {
+    const isSidebarOpen = ref(true);
+
+    const toggleSidebar = () => {
+      isSidebarOpen.value = !isSidebarOpen.value;
+    };
+
+    const addTask = (task) => {
+      //  Handle the task added event here.
+      console.log('Task added:', task);
+      // You might want to emit this event to a parent component or update the router.
+    };
+
+    return {
+      isSidebarOpen,
+      toggleSidebar,
+      addTask,
+    };
+  },
+};
+</script>
+
+<style>
+html,
+body,
+#app,
+.container-fluid,
+.row {
   height: 100%;
-  margin: 0; padding: 0;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
   overflow-y: hidden;
 }
@@ -65,14 +97,15 @@ html, body, #app, .container-fluid, .row {
   padding-right: 15px;
 }
 
-.btn-sidebar:hover  {
+.btn-sidebar:hover {
   background-color: rgba(128, 128, 128, 0.23);
 }
 
-
 @media (max-width: 767.98px) {
-
-  html, body, .container-fluid, .row {
+  html,
+  body,
+  .container-fluid,
+  .row {
     overflow-y: auto;
   }
 
@@ -88,6 +121,7 @@ html, body, #app, .container-fluid, .row {
     overflow-y: auto;
     overflow-x: hidden;
   }
+
   .container-fluid.sidebar-open .app-sidebar-col {
     left: 0;
   }
@@ -115,14 +149,13 @@ html, body, #app, .container-fluid, .row {
     display: none;
     cursor: pointer;
   }
+
   .overlay.show {
     display: block;
   }
-
 }
 
 @media (min-width: 768px) {
-
   .app-sidebar-col {
     display: block !important;
     position: static;
@@ -139,7 +172,7 @@ html, body, #app, .container-fluid, .row {
     margin-left: 0;
   }
 
-  .container-fluid8.sidebar-open .main-content-col {
+  .container-fluid.sidebar-open .main-content-col {
     margin-left: 0;
   }
 
@@ -154,11 +187,14 @@ html, body, #app, .container-fluid, .row {
   .overlay {
     display: none;
   }
-
 }
 
 ul.tasks-list-container li {
-  background-color: #f9f9f9; border: 1px solid #eee; margin-bottom: 5px; padding: 10px; border-radius: 4px;
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  margin-bottom: 5px;
+  padding: 10px;
+  border-radius: 4px;
 }
 
 main {

@@ -10,10 +10,9 @@ import com.calendarProject.task_manager.service.UserService;
 @Controller
 public class LoginController {
 
-    @Autowired
-    private UserService userService;
 
-    @PostMapping("/login")
+
+  /*  @PostMapping("/login")
     public String loginUser(@RequestParam String email,
                             @RequestParam String password,
                             HttpSession session) {
@@ -27,7 +26,7 @@ public class LoginController {
         } else {
             return "redirect:/loginpage?error=true";
         }
-    }
+    } */
 
     @GetMapping("/index")
     public String home(HttpSession session, Model model) {
@@ -42,7 +41,7 @@ public class LoginController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate(); // wylogowanie
-        return "redirect:/loginpage";
+        return "redirect:/login";
     }
 
 

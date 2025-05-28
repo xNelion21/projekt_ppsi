@@ -1,16 +1,23 @@
 <script setup>
 
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useTaskStore } from '../stores/taskStore';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
+const router = useRouter();
 const taskStore = useTaskStore();
+const userStore = useUserStore();
 
 const isActive = (routeName) => {
   return route.name === routeName;
 };
 
-const userName = "Użytkownik XYZ";
+const displayName = userStore.displayName;
+const handleLogout = async () => {
+  await userStore.logout();
+  router.push('/login');
+};
 
 </script>
 
@@ -20,7 +27,7 @@ const userName = "Użytkownik XYZ";
 
     <div class="dropdown "> <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle sidebar-user-link" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-person-circle me-2 sidebar-link-icon"></i>
-      <strong>{{ userName }}</strong>
+      <strong>{{ displayName }}</strong>
     </a>
       <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
         <li><a class="dropdown-item" href="#">Ustawienia</a></li>

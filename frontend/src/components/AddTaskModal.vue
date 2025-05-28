@@ -1,36 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { BModal } from 'bootstrap-vue-next';
 
 const emit = defineEmits(['taskAdded']);
 
 const newTaskText = ref('');
 const newDueDate = ref('');
-
-const modalElement = ref(null);
-let modalInstance = null;
-
-onMounted(() => {
-  if (modalElement.value) {
-    modalInstance = new Modal(modalElement.value);
-
-    modalElement.value.addEventListener('hidden.bs.modal', () => {
-      resetForm();
-    });
-
-    modalElement.value.addEventListener('shown.bs.modal', () => {
-      if (newDueDate.value === '') {
-        const today = new Date();
-        const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-        const year = nextWeek.getFullYear();
-        const month = (nextWeek.getMonth() + 1).toString().padStart(2, '0');
-        const day = nextWeek.getDate().toString().padStart(2, '0');
-
-        newDueDate.value = `${year}-${month}-${day}`;
-      }
-      document.getElementById('taskTextInput').focus();
-    });
-  }
-});
+const modalShow = ref(false);
 
 const resetForm = () => {
   newTaskText.value = '';
@@ -45,58 +21,75 @@ const saveTask = () => {
 
   emit('taskAdded', {
     text: newTaskText.value.trim(),
-    dueDate: newDueDate.value || null
+    dueDate: newDueDate.value || null,
   });
-
-  if (modalInstance) {
-    modalInstance.hide();
-  }
-
+  modalShow.value = false;
+  resetForm();
 };
 
+onMounted(() => {
+  if (newDueDate.value === '') {
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const year = nextWeek.getFullYear();
+    const month = (nextWeek.getMonth() + 1).toString().padStart(2, '0');
+    const day = nextWeek.getDate().toString().padStart(2, '0');
+    newDueDate.value = `${year}-${month}-${day}`;
+  }
+});
 </script>
 
 <template>
-  <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true" ref="modalElement">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addTaskModalLabel">Dodaj Nowe Zadanie</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="taskTextInput" class="form-label">Nazwa Zadania</label>
-            <input
-                type="text"
-                class="form-control"
-                id="taskTextInput"
-                placeholder="Zrobić projekt na studia"
-                v-model="newTaskText"
-                @keyup.enter="saveTask" /> </div>
+  <BModal
+      id="addTaskModal"
+      v-model="modalShow"
+      @hidden="resetForm"
+      @shown="() => document.getElementById('taskTextInput').focus()"
+      title="Dodaj Nowe Zadanie"
+  >
+    <div class="modal-body">
+      <div class="mb-3">
+        <label for="taskTextInput" class="form-label">
+          Nazwa Zadania
+        </label>
+        <input
+            type="text"
+            class="form-control"
+            id="taskTextInput"
+            placeholder="Zrobić projekt na studia"
+            v-model="newTaskText"
+            @keyup.enter="saveTask"
+        />
+      </div>
 
-          <div class="mb-3">
-            <label for="taskDueDatePicker" class="form-label">Termin</label>
-            <input
-                type="date"
-                class="form-control"
-                id="taskDueDatePicker"
-                v-model="newDueDate"
-            />
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-          <button type="button" class="btn btn-primary" @click="saveTask">Zapisz Zadanie</button>
-        </div>
+      <div class="mb-3">
+        <label for="taskDueDatePicker" class="form-label">
+          Termin
+        </label>
+        <input
+            type="date"
+            class="form-control"
+            id="taskDueDatePicker"
+            v-model="newDueDate"
+        />
       </div>
     </div>
-  </div>
+    <template #modal-footer>
+      <button
+          type="button"
+          class="btn btn-secondary"
+          @click="modalShow = false"
+      >
+        Anuluj
+      </button>
+      <button type="button" class="btn btn-primary" @click="saveTask">
+        Zapisz Zadanie
+      </button>
+    </template>
+  </BModal>
 </template>
 
 <style scoped>
-
 .modal-content {
   border-radius: 10px;
   border: none;
@@ -172,5 +165,4 @@ const saveTask = () => {
   background-color: #dee2e6;
   border-color: #dee2e6;
 }
-
 </style>

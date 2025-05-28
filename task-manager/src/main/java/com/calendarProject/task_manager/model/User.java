@@ -21,6 +21,16 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    private String nickname;
+    private String languagePreference = "pl";
+    private String themePreference = "light";
+
+    private Integer age;
+    private String gender;
+    private String profileImageUrl;
+
+
+
     @Column(nullable = false)
     private boolean enabled = true;  // Określa, czy użytkownik jest aktywny
 
@@ -71,6 +81,52 @@ public class User implements UserDetails {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+    public String getLanguagePreference() {
+        return languagePreference;
+    }
+
+    public void setLanguagePreference(String languagePreference) {
+        this.languagePreference = languagePreference;
+    }
+    public String getThemePreference() {
+        return themePreference;
+    }
+    public void setThemePreference(String themePreference) {
+        this.themePreference = themePreference;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+
     }
 
     // Implementacja metod z UserDetails

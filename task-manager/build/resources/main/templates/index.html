@@ -2,101 +2,95 @@
 <html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Główny CSS -->
-    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/landingpage_style.css}">
 
-    <!-- Google Fonts-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
 
-    <!-- Ikona -->
     <link rel="icon" type="image/png" th:href="@{/images/icons8-check-16.png}">
 
     <title>Taskify - Planowanie nigdy nie było prostsze!</title>
 </head>
-<body class="home-page">
+    <body>
+    <div id="app">
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+        <nav th:insert="~{fragments/navbar :: navbar}"></nav>
 
-<section class="bg-light text-dark px-5 text-center text-sm-start mb-0 pb-0">
-    <div class="container">
-        <div class="d-sm-flex align-items-center justify-content-between">
-            <div>
-                <h1 class="display-1 fw-bold"><span class="text-warning">Zorganizuj</span> swój dzień</h1>
-                <p class="lead my-4 fs-2 fw-normal text-muted">
-                    Wyznacz priorytety, ustal jasny plan i działaj świadomie.
-                    Osiągaj codzienne cele szybciej niż kiedykolwiek.
-                </p>
-                <a class="btn btn-lg btn-md btn-sm btn-warning text-white fw-bold rounded-4 main-btn fs-2" th:href="@{/register}" role="button">Zacznij za darmo</a>
+        <section class="bg-light text-dark px-5 text-center text-sm-start mb-0 pb-0">
+            <div class="container">
+                <div class="d-sm-flex align-items-center justify-content-between">
+                    <div>
+                        <h1 class="display-1 fw-bold"><span class="text-warning">Zorganizuj</span> swój dzień</h1>
+                        <p class="lead my-4 fs-2 fw-normal text-muted">
+                            Wyznacz priorytety, ustal jasny plan i działaj świadomie.
+                            Osiągaj codzienne cele szybciej niż kiedykolwiek.
+                        </p>
+                        <a class="btn btn-lg btn-md btn-sm btn-warning text-white fw-bold rounded-4 main-btn fs-2" th:href="@{/register}" role="button">Zacznij za darmo</a>
+                    </div>
+                    <img class="img-fluid w-50 d-none d-sm-block" th:src="@{/images/landingpage.svg}" alt="Ilustracja">
+                </div>
             </div>
-            <img class="img-fluid w-50 d-none d-sm-block" th:src="@{/images/landingpage.svg}" alt="Ilustracja">
-        </div>
-    </div>
-</section>
+        </section>
 
-<svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-    <path fill="#f8f9fa" fill-opacity="1" d="M0,192L60,213.3C120,235,240,277,360,245.3C480,213,600,107,720,96C840,85,960,171,1080,192C1200,213,1320,171,1380,149.3L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
-</svg>
+        <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                        <path fill="#f8f9fa" fill-opacity="1" d="M0,192L60,213.3C120,235,240,277,360,245.3C480,213,600,107,720,96C840,85,960,171,1080,192C1200,213,1320,171,1380,149.3L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+        </svg>
 
-<section class="steps container-custom">
+        <section class="steps container-custom">
 
-    <div class="row g-0">
+            <div class="row g-0">
 
-        <div class="col-12 col-sm-6 d-md-flex justify-content-md-center">
-            <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
-        </div>
+                <div class="col-12 col-sm-6 d-md-flex justify-content-md-center">
+                    <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
+                </div>
 
-        <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
-            <div class="steps_content-width ">
-                <p class="text-danger fs-4 fw-bold">Planuj rzetelnie</p>
-                <h1 class="h2  text-bold fs-1 fw-bold">Lorem ipsum</h1>
-                <p class="mb-4 text-muted fs-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ullamcorper luctus porttitor. Aenean sed turpis volutpat, fringilla augue in, maximus nisl.</p>
+                <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
+                    <div class="steps_content-width ">
+                        <p class="text-danger fs-4 fw-bold">Planuj rzetelnie</p>
+                        <h1 class="h2  text-bold fs-1 fw-bold">Lorem ipsum</h1>
+                        <p class="mb-4 text-muted fs-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ullamcorper luctus porttitor. Aenean sed turpis volutpat, fringilla augue in, maximus nisl.</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
 
-    <div class="row g-0">
+            <div class="row g-0">
+                 <div class="col-12 col-sm-6 d-md-flex justify-content-md-center order-sm-1">
+                     <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
+                 </div>
 
-        <div class="col-12 col-sm-6 d-md-flex justify-content-md-center order-sm-1">
-            <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
-        </div>
-
-        <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
-            <div class="steps_content-width">
-                <p class="text-primary fs-4 fw-bold">02</p>
-                <h1 class="h2 mb-4 text-bold fs-1 fw-bold">Lorem ipsum</h1>
-                <p class="mb-4 text-muted fs-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ullamcorper luctus porttitor. Aenean sed turpis volutpat, fringilla augue in, maximus nisl.</p>
+                <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
+                    <div class="steps_content-width">
+                        <p class="text-primary fs-4 fw-bold">02</p>
+                        <h1 class="h2 mb-4 text-bold fs-1 fw-bold">Lorem ipsum</h1>
+                        <p class="mb-4 text-muted fs-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ullamcorper luctus porttitor. Aenean sed turpis volutpat, fringilla augue in, maximus nisl.</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
 
-    <div class="row g-0">
-        <div class="col-12 col-sm-6 d-md-flex justify-content-md-center">
-            <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
-        </div>
-
-        <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
-            <div class="steps_content-width">
-                <p class="text-success fs-4 fw-bold">03</p>
-                <h1 class="h2 mb-4 text-bold fs-1 fw-bold">Lorem ipsum</h1>
-                <p class="mb-4 text-muted fs-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ullamcorper luctus porttitor. Aenean sed turpis volutpat, fringilla augue in, maximus nisl.</p>
+            <div class="row g-0">
+                <div class="col-12 col-sm-6 d-md-flex justify-content-md-center">
+                    <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
+                </div>
+                <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
+                    <div class="steps_content-width">
+                        <p class="text-success fs-4 fw-bold">03</p>
+                        <h1 class="h2 mb-4 text-bold fs-1 fw-bold">Lorem ipsum</h1>
+                        <p class="mb-4 text-muted fs-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ullamcorper luctus porttitor. Aenean sed turpis volutpat, fringilla augue in, maximus nisl.</p>
+                    </div>
+                </div>
             </div>
+        </section>
+
+        <footer th:insert="~{fragments/footer :: footer}"></footer>
         </div>
-    </div>
-</section>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    </body>
 </html>
+
