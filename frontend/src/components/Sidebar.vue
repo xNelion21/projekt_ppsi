@@ -15,8 +15,18 @@ const isActive = (routeName) => {
 
 const displayName = userStore.displayName;
 const handleLogout = async () => {
-  await userStore.logout();
-  router.push('/login');
+
+  try {
+    await userStore.logout(); // Wywołaj akcję logout ze store'a
+    console.log('Wylogowano pomyślnie poprzez store. Spring Security powinien przekierować.');
+    window.location.href = 'http://localhost:8080/loginpage'; // Zapewnij przekierowanie całej przeglądarki
+  } catch (error) {
+    console.error('Błąd podczas wylogowywania z sidebara:', error);
+    alert('Wystąpił błąd podczas wylogowywania. Spróbuj ponownie.');
+    window.location.href = 'http://localhost:8080/loginpage'; // Przekieruj nawet w przypadku błędu
+  }
+
+
 };
 
 </script>
@@ -30,10 +40,10 @@ const handleLogout = async () => {
       <strong>{{ displayName }}</strong>
     </a>
       <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-        <li><a class="dropdown-item" href="#">Ustawienia</a></li>
-        <li><a class="dropdown-item" href="#">Profil</a></li>
+        <li><router-link class="dropdown-item" :to="{ name: 'settings' }">Ustawienia</router-link></li>
+        <li><router-link class="dropdown-item" :to="{ name: 'profile' }">Profil</router-link></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Wyloguj</a></li>
+        <li><a class="dropdown-item" href="#" @click.prevent="handleLogout">Wyloguj</a></li>
       </ul>
     </div>
     <hr>

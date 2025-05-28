@@ -4,7 +4,7 @@ import com.calendarProject.task_manager.dto.LoginRequest;
 import com.calendarProject.task_manager.dto.LoginResponse;
 import com.calendarProject.task_manager.model.User;
 import com.calendarProject.task_manager.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired; // Można pominąć, jeśli jest tylko jeden konstruktor
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,16 +14,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth") // Wspólny prefix dla endpointów autoryzacji
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    public  UserRepository userRepository;
+    private final UserRepository userRepository; // Dobrą praktyką jest uczynienie pola finalnym, jeśli jest wstrzykiwane przez konstruktor
 
-    @Autowired // Wstrzykiwanie przez konstruktor jest preferowane
-    public AuthController(AuthenticationManager authenticationManager) {
+    @Autowired // Adnotacja @Autowired jest opcjonalna, jeśli klasa ma tylko jeden konstruktor (od Spring 4.3)
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository) { // Dodano UserRepository jako parametr
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
+        this.userRepository = userRepository; // Teraz Spring wstrzyknie tutaj poprawną instancję
     }
 
     @PostMapping("/login")
@@ -38,21 +38,17 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Po udanym uwierzytelnieniu, możesz pobrać szczegóły użytkownika
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String email = userDetails.getUsername(); // Zakładając, że username to email
+            String email = userDetails.getUsername();
 
-            // Tutaj w przyszłości możesz generować i zwracać token JWT
-            // Na razie zwracamy prostą odpowiedź
             return ResponseEntity.ok(new LoginResponse("Użytkownik zalogowany pomyślnie!", email));
 
         } catch (Exception e) {
-
             return ResponseEntity.status(401).body(new LoginResponse("Błąd logowania: " + e.getMessage(), loginRequest.getEmail()));
         }
     }
 
-    @GetMapping("/me") // Nowy endpoint do pobierania danych zalogowanego użytkownika
+    @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
@@ -61,19 +57,18 @@ public class AuthController {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
+
+        // Sprawdzenie, czy userRepository nie jest null (dodatkowe zabezpieczenie, ale po poprawce nie powinno być potrzebne)
+        if (this.userRepository == null) {
+            System.err.println("FATAL: UserRepository is still null in getCurrentUser() after constructor fix attempt!");
+            return ResponseEntity.status(500).body("Wewnętrzny błąd serwera: Repozytorium użytkowników nie jest dostępne.");
+        }
         User currentUser = userRepository.findByEmail(email);
+
 
         if (currentUser == null) {
             return ResponseEntity.status(404).body("Użytkownik nie znaleziony.");
         }
-
-        // Zwracamy obiekt User (możesz stworzyć DTO, jeśli nie chcesz zwracać hasła itp.)
-        // Na potrzeby tego przykładu zwrócimy pełny obiekt User, ale w realnej aplikacji lepiej DTO.
         return ResponseEntity.ok(currentUser);
     }
-
-
-
-
-
 }

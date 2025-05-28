@@ -2,6 +2,8 @@ package com.calendarProject.task_manager.controller;
 
 import com.calendarProject.task_manager.model.User;
 import com.calendarProject.task_manager.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +23,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private static final String UPLOAD_DIR = "uploads/profile_images/"; // Katalog do przechowywania zdjęć
-
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -39,7 +41,9 @@ public class UserController {
     @PutMapping("/me/settings")
     public ResponseEntity<?> updateUserSettings(@RequestBody User updatedUser) {
         User currentUser = getCurrentAuthenticatedUser();
+
         if (currentUser == null) {
+            logger.warn("Attempt to update settings by unauthenticated user. Access denied.");
             return ResponseEntity.status(401).body("Użytkownik niezalogowany.");
         }
 

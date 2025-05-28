@@ -66,7 +66,8 @@ export default {
     async handleLogout() {
       try {
         await this.userStore.logout();
-        this.$router.push('/login');
+        console.log('Wylogowano pomyślnie poprzez store. Spring Security powinien przekierować.');
+        window.location.href = 'http://localhost:8080/loginpage';
       } catch (error) {
         console.error('Błąd podczas wylogowywania:', error);
       }

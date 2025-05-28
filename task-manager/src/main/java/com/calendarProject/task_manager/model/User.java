@@ -5,6 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List; // Import dla List
+import java.util.ArrayList; // Import dla ArrayList
 import java.util.Set;
 
 @Entity
@@ -28,8 +30,6 @@ public class User implements UserDetails {
     private Integer age;
     private String gender;
     private String profileImageUrl;
-
-
 
     @Column(nullable = false)
     private boolean enabled = true;  // Określa, czy użytkownik jest aktywny
@@ -69,7 +69,6 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
-
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -118,7 +117,6 @@ public class User implements UserDetails {
 
     public void setGender(String gender) {
         this.gender = gender;
-
     }
 
     public String getProfileImageUrl() {

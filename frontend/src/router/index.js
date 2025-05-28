@@ -55,13 +55,13 @@ const routes = [
         path: '/settings',
         name: 'settings',
         component: SettingsView,
-        meta: { requiresAuth: true }
+
     },
     {
         path: '/profile',
         name: 'profile',
         component: ProfileView,
-        meta: { requiresAuth: true }
+
     }
 
 ];

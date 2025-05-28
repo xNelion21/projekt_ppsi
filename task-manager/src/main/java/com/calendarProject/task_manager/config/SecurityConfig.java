@@ -17,12 +17,6 @@ import com.calendarProject.task_manager.repository.UserRepository;
 
 @Configuration
 public class SecurityConfig {
-     final UserRepository userRepository;
-
-    public SecurityConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-//AI MI MOWI ZEBY ZROBIC SWOJ WLASNY SPOSOB LOGOWANIA A POTEM NIC NIE DZIALA
 
 @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -53,6 +47,10 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")  // URL dla wylogowania
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK); // Zapewnij status OK
+                            response.sendRedirect("http://localhost:8080/loginpage"); // Przekierowanie po wylogowaniu
+                        })
                         .permitAll() // Zezwól na dostęp do strony wylogowywania
                 );
 

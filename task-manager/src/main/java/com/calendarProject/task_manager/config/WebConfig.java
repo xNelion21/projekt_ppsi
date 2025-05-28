@@ -17,6 +17,13 @@ public class WebConfig implements WebMvcConfigurer { // Nazwa może być WebConf
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(3600); // Opcjonalnie, ale zalecane
+
+        registry.addMapping("/logout")
+                .allowedOrigins("http://localhost:5173", "http://localhost:8080", "http://localhost:5174")
+                .allowedMethods("POST", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 
     @Override

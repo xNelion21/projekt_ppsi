@@ -2,6 +2,8 @@ package com.calendarProject.task_manager.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "tasks")
 public class Task {
@@ -27,9 +29,7 @@ public class Task {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+
 
     public String getDescription() {
         return description;
