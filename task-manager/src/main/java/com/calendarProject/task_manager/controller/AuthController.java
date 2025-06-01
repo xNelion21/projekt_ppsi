@@ -1,5 +1,5 @@
 package com.calendarProject.task_manager.controller;
-
+import com.calendarProject.task_manager.dto.UserSummaryDTO;
 import com.calendarProject.task_manager.dto.LoginRequest;
 import com.calendarProject.task_manager.dto.LoginResponse;
 import com.calendarProject.task_manager.model.User;
@@ -69,6 +69,22 @@ public class AuthController {
         if (currentUser == null) {
             return ResponseEntity.status(404).body("Użytkownik nie znaleziony.");
         }
-        return ResponseEntity.ok(currentUser);
+        UserSummaryDTO userDto = getUserSummaryDTO(currentUser);
+
+        return ResponseEntity.ok(userDto);
+    }
+
+    public static UserSummaryDTO getUserSummaryDTO(User currentUser) {
+        UserSummaryDTO userDto = new UserSummaryDTO();
+        userDto.setId(currentUser.getId());
+        userDto.setEmail(currentUser.getEmail());
+        userDto.setNickname(currentUser.getNickname());
+        userDto.setLanguagePreference(currentUser.getLanguagePreference());
+        userDto.setThemePreference(currentUser.getThemePreference());
+        userDto.setAge(currentUser.getAge());
+        userDto.setGender(currentUser.getGender());
+        userDto.setProfileImageUrl(currentUser.getProfileImageUrl());
+        userDto.setRoles(currentUser.getRoles()); // Zakładając, że getRoles() zwraca Set<String>
+        return userDto;
     }
 }

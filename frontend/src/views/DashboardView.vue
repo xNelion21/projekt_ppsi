@@ -1,6 +1,6 @@
 <template>
-  <p> test</p>
-  <nav> <router-link to="/login">Login</router-link> |
+
+  <nav> <a href="http://localhost:8080/loginpage">Login</a> |
     <router-link to="/dashboard">Dashboard</router-link></nav>
   <div class="container mt-4">
     <h1 class="mb-3">Witaj, uzytkowniku !</h1>
@@ -74,7 +74,7 @@ export default {
     },
     async loadTasks() {
       try {
-        const response = await axios.get('http://localhost:8080/api/tasks');
+        const response = await axios.get('http://localhost:8080/api/tasks/my-tasks');
         this.tasks = response.data;
         console.log('ŁADUJĘ ZADANIA...');
       } catch (error) {
@@ -87,6 +87,7 @@ export default {
         this.tasks.push(response.data);
         this.newTask.title = '';
         this.newTask.description = '';
+        this.loadTasks();
       } catch (error) {
         console.error('Błąd przy dodawaniu zadania:', error);
       }
@@ -99,7 +100,7 @@ export default {
         console.error('Błąd przy usuwaniu zadania:', error);
         if (error.response && error.response.status === 401) {
           this.userStore.isAuthenticated = false;
-          this.$router.push('/login');
+          window.location.href = 'http://localhost:8080/loginpage';
         }
       }
     },
@@ -111,16 +112,25 @@ export default {
         console.error('Błąd przy aktualizacji statusu zadania:', error);
         if (error.response && error.response.status === 401) {
           this.userStore.isAuthenticated = false;
-          this.$router.push('/login');
+          window.location.href = 'http://localhost:8080/loginpage';
         }
       }
     },
     editTask(task) {
       const newTitle = prompt('Nowy tytuł:', task.title);
       const newDesc = prompt('Nowy opis:', task.description);
-      if (newTitle !== null) task.title = newTitle;
-      if (newDesc !== null) task.description = newDesc;
-      this.toggleTaskCompletion(task); // wyśle PUT z nowymi danymi
+
+      if (newTitle !== null || newDesc !== null || newText !== null || newDueDate !== null) {
+        const updatedTask = {
+          ...task, // Skopiuj istniejące dane
+          title: newTitle !== null ? newTitle : task.title,
+          description: newDesc !== null ? newDesc : task.description,
+          text: newText !== null ? newText : (task.text || ''),
+          dueDate: newDueDate !== null ? newDueDate : (task.dueDate ? task.dueDate.split('T')[0] : null)
+        };
+
+        this.toggleTaskCompletion(updatedTask); // wyśle PUT z nowymi danymi
+      }
     }
   },
   mounted() {

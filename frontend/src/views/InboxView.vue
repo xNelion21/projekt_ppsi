@@ -1,14 +1,15 @@
 <script setup>
 import { useTaskStore } from '../stores/taskStore';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 
 import TodoItem from '../components/ToDoItem.vue';
 import AddTaskModal from '../components/AddTaskModal.vue';
 
 const taskStore = useTaskStore();
-
-const overdueTasks = computed(() => taskStore.overdueTasks);
-const remainingTasks = computed(() => taskStore.remainingInboxTasks);
+const overdueTasks = computed(() => taskStore.overdueTasks || []);
+const remainingTasks = computed(() => taskStore.remainingInboxTasks || []);
+const taskToEdit = ref(null);
+const isAddTaskModalVisible = ref(false);
 
 const addTask = (newTaskData) => {
   taskStore.addTask(newTaskData);

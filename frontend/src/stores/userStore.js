@@ -10,7 +10,8 @@ export const useUserStore = defineStore('user', {
             themePreference: 'light',
             age: null,
             gender: null,
-            profileImageUrl: null
+            profileImageUrl: null,
+            id: null,
         },
         isAuthenticated: false,
         loading: false,
@@ -55,17 +56,10 @@ export const useUserStore = defineStore('user', {
             this.loading = true;
             this.error = null;
             try {
-                // Sprawdź, czy istnieje token, jeśli używasz JWT
-                // const token = localStorage.getItem('jwt_token');
-                // if (!token) {
-                //   this.isAuthenticated = false;
-                //   this.user = { email: null, nickname: null, languagePreference: 'pl', themePreference: 'light', age: null, gender: null, profileImageUrl: null };
-                //   return false;
-                // }
-                // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
                 const response = await axios.get('http://localhost:8080/api/auth/me');
                 const userData = response.data;
+                this.user.id = userData.id
                 this.user.email = userData.email;
                 this.user.nickname = userData.nickname;
                 this.user.languagePreference = userData.languagePreference;
@@ -74,16 +68,13 @@ export const useUserStore = defineStore('user', {
                 this.user.gender = userData.gender;
                 this.user.profileImageUrl = userData.profileImageUrl;
                 this.isAuthenticated = true;
+                console.log('userStore: fetchCurrentUser successful, user data with ID:', this.user);
                 return true;
             } catch (err) {
                 console.error("Błąd podczas pobierania danych użytkownika:", err);
                 this.error = 'Nie udało się pobrać danych użytkownika.';
                 this.isAuthenticated = false;
                 this.user = { email: null, nickname: null, languagePreference: 'pl', themePreference: 'light', age: null, gender: null, profileImageUrl: null }; // Wyczyść dane
-                // Opcjonalnie: Przekieruj do strony logowania, jeśli błąd to 401
-                // if (err.response?.status === 401) {
-                //   this.router.push('/login');
-                // }
                 return false;
             } finally {
                 this.loading = false;
@@ -92,6 +83,7 @@ export const useUserStore = defineStore('user', {
         async updateSettings(settingsData) {
             this.loading = true;
             this.error = null;
+            console.log('Wysyłane dane ustawień DO BACKENDU:', JSON.stringify(settingsData));
             try {
                 const response = await axios.put('http://localhost:8080/api/users/me/settings', settingsData);
                 this.user.nickname = response.data.nickname;

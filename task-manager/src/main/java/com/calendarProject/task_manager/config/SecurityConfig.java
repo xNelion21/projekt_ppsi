@@ -27,7 +27,6 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // <-- wyłącz ochronę CSRF
                 .cors(Customizer.withDefaults())
-                .cors(cors -> {})
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers( "/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register").permitAll()
@@ -39,7 +38,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login") // URL do obsługi logowania
 
                     .successHandler((request, response, authentication) -> {
-                        response.setStatus(HttpServletResponse.SC_OK);
+                        System.out.println("User: " + authentication.getName() + " zalogowany pomyślnie. Przekierowanie na dashboard.");
                         response.sendRedirect("http://localhost:5173/dashboard");
                     })
                     .permitAll()

@@ -1,6 +1,6 @@
 <script setup>
 import {computed, defineEmits, defineProps} from 'vue';
-import {getFormattedTodayDate} from "@/stores/taskStore.js";
+import {getFormattedTodayDate, useTaskStore} from "@/stores/taskStore.js";
 
 const props = defineProps({
   task: {
@@ -16,8 +16,12 @@ const props = defineProps({
 
 const emit = defineEmits(['toggleDone', 'deleteTask']);
 
-const handleToggleDone = () => {
-  emit('toggleDone', props.task.id);
+const taskStore = useTaskStore()
+
+const handleToggleComplete = async (task) => {
+  if (task && task.id) {
+    await taskStore.toggleTaskCompletion(task.id);
+  }
 };
 
 const handleDeleteTask = () => {
@@ -73,6 +77,12 @@ const formattedDueDate = computed(() => {
     console.warn("TodoItem.vue (formattedDueDate): Invalid Date object created from parts:", yearNum, monthNum - 1, dayNum, "from string:", props.task.dueDate);
     return 'Błędna data';
   }
+  const isDueDatePast = computed(() => {
+    if (!props.task.dueDate || props.task.completed) return false;
+    const today = new Date(getFormattedTodayDate());
+    const dueDate = new Date(props.task.dueDate);
+    return dueDate < today;
+  });
 
   const options = { day: 'numeric', month: 'long' };
   try {
@@ -94,7 +104,7 @@ const formattedDueDate = computed(() => {
       type="checkbox"
       :id="'task-' + props.task.id"
       :checked="props.task.done"
-      @change="handleToggleDone"
+          @change="handleToggleComplete(props.task)"
       />
 
       <div class="todo-item-content flex-grow-1">

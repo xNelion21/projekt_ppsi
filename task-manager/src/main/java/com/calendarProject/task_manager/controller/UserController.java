@@ -1,15 +1,18 @@
 package com.calendarProject.task_manager.controller;
-
+import com.calendarProject.task_manager.dto.UserSummaryDTO;
+import com.calendarProject.task_manager.dto.UserSettingsRequestDTO;
+import com.calendarProject.task_manager.dto.UserProfileRequestDTO;
 import com.calendarProject.task_manager.model.User;
 import com.calendarProject.task_manager.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile; // Do obsługi przesyłania plików (zdjęcie profilowe)
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,43 +42,68 @@ public class UserController {
     }
 
     @PutMapping("/me/settings")
-    public ResponseEntity<?> updateUserSettings(@RequestBody User updatedUser) {
+    public ResponseEntity<?> updateUserSettings(@RequestBody UserSettingsRequestDTO settingsRequest) {
         User currentUser = getCurrentAuthenticatedUser();
-
         if (currentUser == null) {
-            logger.warn("Attempt to update settings by unauthenticated user. Access denied.");
-            return ResponseEntity.status(401).body("Użytkownik niezalogowany.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        boolean changed = false;
+        if (settingsRequest.getNickname() != null && !settingsRequest.getNickname().equals(currentUser.getNickname())) {
+            currentUser.setNickname(settingsRequest.getNickname());
+            changed = true;
+        }
+        if (settingsRequest.getLanguagePreference() != null && !settingsRequest.getLanguagePreference().equals(currentUser.getLanguagePreference())) {
+            currentUser.setLanguagePreference(settingsRequest.getLanguagePreference());
+            changed = true;
+        }
+        if (settingsRequest.getThemePreference() != null && !settingsRequest.getThemePreference().equals(currentUser.getThemePreference())) {
+            currentUser.setThemePreference(settingsRequest.getThemePreference());
+            changed = true;
         }
 
-        // Aktualizuj tylko dozwolone pola ustawień
-        currentUser.setNickname(updatedUser.getNickname());
-        currentUser.setLanguagePreference(updatedUser.getLanguagePreference());
-        currentUser.setThemePreference(updatedUser.getThemePreference());
-
-        userRepository.save(currentUser);
-        return ResponseEntity.ok(currentUser);
+        if (changed) {
+            userRepository.save(currentUser);
+            logger.info("Ustawienia użytkownika {} zostały zaktualizowane.", currentUser.getEmail());
+        } else {
+            logger.info("Brak zmian w ustawieniach dla użytkownika {}.", currentUser.getEmail());
+        }
+        // Zawsze zwracaj UserSummaryDTO, nawet jeśli nie było zmian, aby frontend miał aktualne dane
+        return ResponseEntity.ok(AuthController.getUserSummaryDTO(currentUser)); // Lub UserMapper.toUserSummaryDTO(currentUser)
     }
+
 
     @PutMapping("/me/profile")
-    public ResponseEntity<?> updateUserProfile(@RequestBody User updatedUser) {
+    public ResponseEntity<?> updateUserProfile(@RequestBody UserProfileRequestDTO profileRequest) {
         User currentUser = getCurrentAuthenticatedUser();
         if (currentUser == null) {
-            return ResponseEntity.status(401).body("Użytkownik niezalogowany.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Aktualizuj tylko dozwolone pola profilu
-        currentUser.setAge(updatedUser.getAge());
-        currentUser.setGender(updatedUser.getGender());
+        boolean changed = false;
+        if (profileRequest.getAge() != null && !profileRequest.getAge().equals(currentUser.getAge())) {
+            currentUser.setAge(profileRequest.getAge());
+            changed = true;
+        }
+        if (profileRequest.getGender() != null && !profileRequest.getGender().equals(currentUser.getGender())) {
+            currentUser.setGender(profileRequest.getGender());
+            changed = true;
+        }
 
-        userRepository.save(currentUser);
-        return ResponseEntity.ok(currentUser);
+        if (changed) {
+            userRepository.save(currentUser);
+            logger.info("Profil użytkownika {} został zaktualizowany.", currentUser.getEmail());
+        } else {
+            logger.info("Brak zmian w profilu dla użytkownika {}.", currentUser.getEmail());
+        }
+        return ResponseEntity.ok(AuthController.getUserSummaryDTO(currentUser)); // Lub UserMapper.toUserSummaryDTO(currentUser)
     }
+
 
     @PostMapping("/me/profile/upload-image")
     public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
         User currentUser = getCurrentAuthenticatedUser();
         if (currentUser == null) {
-            return ResponseEntity.status(401).body("Użytkownik niezalogowany.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         if (file.isEmpty()) {
@@ -100,7 +128,7 @@ public class UserController {
 
             return ResponseEntity.ok("Zdjęcie profilowe zostało przesłane pomyślnie.");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Nie udało się przesłać pliku dla użytkownika {}: {}", (currentUser.getEmail()), e.getMessage(), e);
             return ResponseEntity.status(500).body("Nie udało się przesłać pliku: " + e.getMessage());
         }
     }

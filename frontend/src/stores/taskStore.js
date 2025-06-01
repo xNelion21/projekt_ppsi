@@ -1,5 +1,11 @@
 import {defineStore} from 'pinia';
 import {reactive} from 'vue';
+import axios from "axios";
+
+const apiClient = axios.create({
+    baseURL: 'http://localhost:8080/api', // Twój adres backendu
+    withCredentials: true
+});
 
 export function getFormattedTodayDate() {
     const today = new Date();
@@ -32,13 +38,13 @@ export const useTaskStore = defineStore('taskStore', {
     state: () => ({
 
         tasks: reactive([
-            { id: 1, text: 'Nauczyć się Vue', done: false, dueDate: '2025-06-15' },
-            { id: 2, text: 'Zbudować formularz zadań', done: true, dueDate: '2025-04-20' },
-            { id: 3, text: 'Połączyć z backendem Spring Boot', done: false, dueDate: '2025-06-01' },
-            { id: 4, text: 'Zadanie na dzisiaj - test', done: false, dueDate: getFormattedTodayDate() },
-            { id: 5, text: 'Zadanie przeterminowane', done: false, dueDate: '2025-05-01' },
-            { id: 6, text: 'Zadanie ukończone przeterminowane', done: true, dueDate: '2025-05-02' },
-            { id: 7, text: 'Zadanie ukończone na dzisiaj', done: true, dueDate: getFormattedTodayDate() }
+            { id: 1, text: 'Nauczyć się Vue', completed: false, dueDate: '2025-06-15' },
+            { id: 2, text: 'Zbudować formularz zadań', completed: true, dueDate: '2025-04-20' },
+            { id: 3, text: 'Połączyć z backendem Spring Boot', completed: false, dueDate: '2025-06-01' },
+            { id: 4, text: 'Zadanie na dzisiaj - test', completed: false, dueDate: getFormattedTodayDate() },
+            { id: 5, text: 'Zadanie przeterminowane', completed: false, dueDate: '2025-05-01' },
+            { id: 6, text: 'Zadanie ukończone przeterminowane', completed: true, dueDate: '2025-05-02' },
+            { id: 7, text: 'Zadanie ukończone na dzisiaj', completed: true, dueDate: getFormattedTodayDate() }
         ]),
     }),
 
@@ -46,16 +52,16 @@ export const useTaskStore = defineStore('taskStore', {
 
         allTasks: (state) => state.tasks,
 
-        completedTasks: (state) => state.tasks.filter(task => task.done),
+        completedTasks: (state) => state.tasks.filter(task => task.completed),
 
-        todoTasks: (state) => state.tasks.filter(task => !task.done),
+        todoTasks: (state) => state.tasks.filter(task => !task.completed),
 
         overdueTasks: (state) => {
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
             return state.tasks.filter(task =>
-                !task.done &&
+                !task.completed &&
                 task.dueDate &&
                 new Date(task.dueDate) < todayStart
             ).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
@@ -67,7 +73,7 @@ export const useTaskStore = defineStore('taskStore', {
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
             return state.tasks.filter(task =>
-                !task.done &&
+                !task.completed &&
                 (
                     !task.dueDate ||
                     new Date(task.dueDate) >= todayStart
@@ -79,7 +85,7 @@ export const useTaskStore = defineStore('taskStore', {
             const todayString = getFormattedTodayDate();
 
             return state.tasks.filter(task => {
-                if (task.done) {
+                if (task.completed) {
                     return false;
                 }
 
@@ -101,7 +107,7 @@ export const useTaskStore = defineStore('taskStore', {
             const todayString = getFormattedTodayDate();
 
             return state.tasks.filter(task => {
-                if (task.done) {
+                if (task.completed) {
                     return false;
                 }
 
@@ -123,78 +129,142 @@ export const useTaskStore = defineStore('taskStore', {
     actions: {
 
         // TODO: Ta akcja będzie wywoływać endpoint API GET /tasks
-        async fetchTasks() {
-            // Na razie nic nie robi, bo dane są już w stanie.
-            // W przyszłości:
-            // try {
-            //   const response = await fetch('/api/tasks'); // Wywołanie API
-            //   const data = await response.json();
-            //   this.tasks = data; // Zaktualizuj stan danymi z API
-            // } catch (error) {
-            //   console.error('Error fetching tasks:', error);
-            //   // Ustaw stan błędu
-            // }
-        },
-
-        // TODO: Ta akcja będzie wywoływać endpoint API POST /tasks
-        async addTask(newTaskData) {
-            let maxId = 0;
-            if(this.tasks.length > 0) {
-                maxId = Math.max(...this.tasks.map(task => task.id));
-            }
-            const newId = maxId + 1;
-
-            const newTask = {
-                id: newId,
-                ...newTaskData,
-                done: false
-            };
-
-            this.tasks.push(newTask);
-
-            // W przyszłości:
-            // try {
-            //   const response = await fetch('/api/tasks', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(newTaskData) // Wyślij dane zadania do API
-            //   });
-            //   const addedTask = await response.json();
-            //   // Opcjonalnie: Zaktualizuj stan, jeśli API zwraca zadanie z ID/timestamp
-            //   // this.tasks.push(addedTask);
-            // } catch (error) {
-            //   console.error('Error adding task:', error);
-            //   // Ustaw stan błędu
-            // }
-        },
-
-        // TODO: Ta akcja będzie wywoływać endpoint API PUT/PATCH /tasks/{id}/toggle
-        async toggleTaskDone(taskId) {
-            const task = this.tasks.find(task => task.id === taskId);
-            if (task) {
-                task.done = !task.done; // Przełącz status w stanie lokalnie
-
-                // W przyszłości:
-                // try {
-                //   await fetch(`/api/tasks/${taskId}/toggle`, { method: 'PUT' }); // Wywołanie API
-                // } catch (error) {
-                //   console.error('Error toggling task:', error);
-                //   // Opcjonalnie: Cofnij zmianę statusu w stanie lokalnym lub odśwież dane
-                // }
+        async fetchAllUsers() {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await apiClient.get('/tasks/users'); // Endpoint z TaskRestController
+                this.allUsers = response.data;
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to fetch users';
+                console.error("Error fetching users:", err);
+            } finally {
+                this.isLoading = false;
             }
         },
 
-        // TODO: Ta akcja będzie wywoływać endpoint API DELETE /tasks/{id}
+        async fetchMyTasks() {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await apiClient.get('/tasks/my-tasks');
+                this.tasks = response.data; // Oczekujemy listy TaskResponseDTO
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to fetch tasks';
+                console.error("Error fetching tasks:", err);
+                this.tasks = []; // Wyczyść w razie błędu
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        async addTask(taskData) { // taskData to obiekt TaskRequestDTO
+            this.isLoading = true;
+            this.error = null;
+            try {
+                // taskData = { title, description, text, dueDate (YYYY-MM-DD), assignedUserIds (Set<Long>) }
+                const response = await apiClient.post('/tasks', taskData);
+                // Można dodać nowo utworzone zadanie do listy lub przeładować wszystkie
+                this.tasks.push(response.data); // response.data to TaskResponseDTO
+                // lub await this.fetchMyTasks();
+                return true; // Sukces
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to add task';
+                console.error("Error adding task:", err);
+                return false; // Błąd
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        async updateTask(taskId, taskData) { // taskData to obiekt TaskRequestDTO
+            this.isLoading = true;
+            this.error = null;
+            try {
+                // taskData = { title, description, text, dueDate, completed, assignedUserIds }
+                const response = await apiClient.put(`/tasks/${taskId}`, taskData);
+                const index = this.tasks.findIndex(t => t.id === taskId);
+                if (index !== -1) {
+                    this.tasks[index] = response.data; // response.data to TaskResponseDTO
+                }
+                return true;
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to update task';
+                console.error("Error updating task:", err);
+                return false;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        async toggleTaskCompletion(taskId) {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await apiClient.put(`/tasks/${taskId}/toggle-complete`);
+                const index = this.tasks.findIndex(t => t.id === taskId);
+                if (index !== -1) {
+                    this.tasks[index] = response.data;
+                }
+                return true;
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to toggle task completion';
+                console.error("Error toggling task:", err);
+                return false;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+
         async deleteTask(taskId) {
-            this.tasks = this.tasks.filter(task => task.id !== taskId);
-
-            // W przyszłości:
-            // try {
-            //   await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' }); // Wywołanie API
-            // } catch (error) {
-            //   console.error('Error deleting task:', error);
-            //   // Opcjonalnie: Pokaż komunikat o błędzie lub odśwież dane
-            // }
+            this.isLoading = true;
+            this.error = null;
+            try {
+                await apiClient.delete(`/tasks/${taskId}`);
+                this.tasks = this.tasks.filter(t => t.id !== taskId);
+                return true;
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to delete task';
+                console.error("Error deleting task:", err);
+                return false;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        async assignUsersToTask(taskId, userIds) { // userIds to Set<Long>
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await apiClient.post(`/tasks/${taskId}/assign-users`, userIds);
+                const index = this.tasks.findIndex(t => t.id === taskId);
+                if (index !== -1) {
+                    this.tasks[index] = response.data;
+                }
+                return true;
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to assign users';
+                console.error("Error assigning users:", err);
+                return false;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        async removeUserFromTask(taskId, userIdToRemove) {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await apiClient.post(`/tasks/${taskId}/remove-user/${userIdToRemove}`);
+                const index = this.tasks.findIndex(t => t.id === taskId);
+                if (index !== -1) {
+                    this.tasks[index] = response.data;
+                }
+                return true;
+            } catch (err) {
+                this.error = err.response?.data?.message || err.message || 'Failed to remove user';
+                console.error("Error removing user:", err);
+                return false;
+            } finally {
+                this.isLoading = false;
+            }
         }
+
     },
 });

@@ -1,116 +1,163 @@
 <template>
   <div class="container mt-4">
     <h1>Mój Profil</h1>
-    <p v-if="userStore.loading">Ładowanie profilu...</p>
-    <p v-if="userStore.error" class="text-danger">{{ userStore.error }}</p>
 
-    <div class="card mt-4">
-      <div class="card-body">
-        <div class="text-center mb-4">
-          <img
-              :src="userStore.user.profileImageUrl || '/default-profile.png'"
-              alt="Zdjęcie profilowe"
-              class="profile-image mb-2"
-          />
-          <input type="file" @change="onFileSelected" class="form-control-file" />
-          <button @click="uploadImage" class="btn btn-sm btn-secondary mt-2" :disabled="!selectedFile || userStore.loading">
-            {{ userStore.loading ? 'Przesyłanie...' : 'Zmień zdjęcie' }}
-          </button>
-        </div>
-
-        <form @submit.prevent="saveProfile">
-          <div class="mb-3">
-            <label for="email" class="form-label">Email:</label>
-            <input type="email" id="email" :value="userStore.user.email" class="form-control" disabled />
-          </div>
-
-          <div class="mb-3">
-            <label for="age" class="form-label">Wiek:</label>
-            <input type="number" id="age" v-model="profile.age" class="form-control" />
-          </div>
-
-          <div class="mb-3">
-            <label for="gender" class="form-label">Płeć:</label>
-            <select id="gender" v-model="profile.gender" class="form-select">
-              <option value="">Wybierz...</option>
-              <option value="male">Mężczyzna</option>
-              <option value="female">Kobieta</option>
-              <option value="other">Inna</option>
-            </select>
-          </div>
-
-          <button type="submit" class="btn btn-primary" :disabled="userStore.loading">
-            {{ userStore.loading ? 'Zapisywanie...' : 'Zapisz profil' }}
-          </button>
-          <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
-        </form>
+    <div v-if="userStore.loading && !userDataLoaded" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Ładowanie profilu...</span>
       </div>
+      <p class="mt-2">Ładowanie profilu...</p>
+    </div>
+
+    <div v-else-if="loadError" class="alert alert-danger">
+      Nie udało się załadować danych profilu. Proszę spróbować odświeżyć stronę lub skontaktować się z pomocą techniczną.
+    </div>
+
+    <div v-else-if="userDataLoaded && userStore.user && userStore.user.email" class="card mt-4 shadow-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-3 text-center mb-3 mb-md-0">
+            <img
+                :src="userStore.user.profileImageUrl || defaultProfileImage"
+                alt="Zdjęcie profilowe"
+                class="profile-image img-fluid"
+                @error="handleImageError"
+            />
+          </div>
+          <div class="col-md-9">
+            <h2 class="card-title mb-3">{{ userStore.user.nickname || 'Brak pseudonimu' }}</h2>
+            <dl class="row">
+              <dt class="col-sm-4 col-lg-3">Adres Email:</dt>
+              <dd class="col-sm-8 col-lg-9">{{ userStore.user.email }}</dd>
+
+              <dt class="col-sm-4 col-lg-3">Wiek:</dt>
+              <dd class="col-sm-8 col-lg-9">{{ userStore.user.age != null ? userStore.user.age : 'Nie podano' }}</dd>
+
+              <dt class="col-sm-4 col-lg-3">Płeć:</dt>
+              <dd class="col-sm-8 col-lg-9">{{ formatGender(userStore.user.gender) }}</dd>
+
+              <dt class="col-sm-4 col-lg-3">Preferowany język:</dt>
+              <dd class="col-sm-8 col-lg-9">{{ formatLanguage(userStore.user.languagePreference) }}</dd>
+
+              <dt class="col-sm-4 col-lg-3">Preferowany wygląd:</dt>
+              <dd class="col-sm-8 col-lg-9">{{ formatTheme(userStore.user.themePreference) }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else-if="!userStore.loading && !loadError" class="alert alert-warning">
+      Nie znaleziono danych użytkownika.
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 
 const userStore = useUserStore();
-const successMessage = ref(null);
-const selectedFile = ref(null);
+const userDataLoaded = ref(false); // Flaga wskazująca, czy próba załadowania danych została zakończona
+const loadError = ref(false);     // Flaga wskazująca, czy wystąpił błąd podczas ładowania
 
-const profile = ref({
-  age: userStore.user.age,
-  gender: userStore.user.gender
-});
+// Ścieżka do domyślnego obrazka profilowego w folderze `public` Twojego projektu Vue
+const defaultProfileImage = '/img/default-profile.png'; // Upewnij się, że ten plik istnieje
 
-// Wczytaj dane użytkownika, jeśli nie są jeszcze wczytane
-onMounted(async () => {
-  if (!userStore.user.email) {
-    await userStore.fetchCurrentUser();
-    profile.value.age = userStore.user.age;
-    profile.value.gender = userStore.user.gender;
-  }
-});
-
-const onFileSelected = (event) => {
-  selectedFile.value = event.target.files[0];
-};
-
-const uploadImage = async () => {
-  if (!selectedFile.value) {
-    alert('Proszę wybrać plik do przesłania.');
-    return;
-  }
-  const success = await userStore.uploadProfileImage(selectedFile.value);
-  if (success) {
-    successMessage.value = 'Zdjęcie profilowe zostało przesłane pomyślnie!';
-    selectedFile.value = null; // Wyczyść wybrany plik
-    setTimeout(() => {
-      successMessage.value = null;
-    }, 3000);
+// Funkcja do pobierania/synchronizacji danych użytkownika
+const syncUserData = async () => {
+  // Jeśli użytkownik jest już uwierzytelniony i ma email w store, zakładamy, że dane są załadowane
+  if (userStore.isAuthenticated && userStore.user && userStore.user.email) {
+    userDataLoaded.value = true;
+    loadError.value = false;
   } else {
-    successMessage.value = 'Błąd podczas przesyłania zdjęcia.';
+    // W przeciwnym razie, spróbuj pobrać dane
+    // userStore.loading będzie zarządzane przez akcję fetchCurrentUser
+    const success = await userStore.fetchCurrentUser();
+    if (success) {
+      userDataLoaded.value = true;
+      loadError.value = false;
+    } else {
+      userDataLoaded.value = false; // Dane nie załadowane (ale fetch zakończony)
+      loadError.value = true;     // Wystąpił błąd
+    }
   }
 };
 
-const saveProfile = async () => {
-  const success = await userStore.updateProfile(profile.value);
-  if (success) {
-    successMessage.value = 'Profil zapisany pomyślnie!';
-    setTimeout(() => {
-      successMessage.value = null;
-    }, 3000);
-  } else {
-    successMessage.value = 'Błąd podczas zapisu profilu.';
+onMounted(() => {
+  syncUserData();
+});
+
+// Obserwuj zmiany w userStore.user (np. po aktualizacji w Ustawieniach), aby odświeżyć widok profilu
+watch(() => userStore.user, (newUser) => {
+  if (newUser && newUser.email) { // Sprawdź, czy nowy użytkownik ma email (wskaźnik załadowanych danych)
+    userDataLoaded.value = true;
+    loadError.value = false;
   }
+}, { deep: true });
+
+
+// Funkcje pomocnicze do formatowania wyświetlanych wartości
+const formatGender = (genderKey) => {
+  if (!genderKey || genderKey.trim() === '') return 'Nie podano';
+  const genders = {
+    male: 'Mężczyzna',
+    female: 'Kobieta',
+    other: 'Inna',
+  };
+  return genders[genderKey.toLowerCase()] || genderKey; // Zwróć klucz, jeśli nie ma tłumaczenia
+};
+
+const formatLanguage = (langKey) => {
+  if (!langKey) return 'Nie ustawiono';
+  const languages = {
+    pl: 'Polski',
+    en: 'English',
+  };
+  return languages[langKey.toLowerCase()] || langKey;
+};
+
+const formatTheme = (themeKey) => {
+  if (!themeKey) return 'Nie ustawiono';
+  const themes = {
+    light: 'Jasny',
+    dark: 'Ciemny',
+  };
+  return themes[themeKey.toLowerCase()] || themeKey;
+};
+
+// Obsługa błędu ładowania obrazka profilowego - ustawia domyślny obrazek
+const handleImageError = (event) => {
+  event.target.src = defaultProfileImage;
 };
 </script>
 
 <style scoped>
 .profile-image {
-  width: 150px;
+  width: 150px;  /* Możesz dostosować rozmiar */
   height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ddd;
+  border-radius: 50%; /* Okrągły obrazek */
+  object-fit: cover;   /* Zapewnia, że obrazek dobrze wypełnia ramkę */
+  border: 3px solid #e9ecef; /* Subtelna ramka */
+  background-color: #f8f9fa; /* Tło, na wypadek gdyby obrazek się nie ładował */
+}
+
+.card {
+  border: none; /* Usuń domyślną ramkę karty dla czystszego wyglądu */
+}
+
+dt {
+  font-weight: 600; /* Lekko pogrubione etykiety */
+  color: #495057;
+}
+
+dd {
+  margin-bottom: 0.8rem; /* Odstęp pod wartościami */
+  color: #212529;
+}
+
+/* Dodatkowe style dla spinnera, jeśli domyślny jest za mały */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
 }
 </style>

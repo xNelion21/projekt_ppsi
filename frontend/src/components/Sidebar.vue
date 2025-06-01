@@ -1,44 +1,11 @@
-<script setup>
-
-import { useRoute, useRouter } from 'vue-router';
-import { useTaskStore } from '../stores/taskStore';
-import { useUserStore } from '@/stores/userStore';
-
-const route = useRoute();
-const router = useRouter();
-const taskStore = useTaskStore();
-const userStore = useUserStore();
-
-const isActive = (routeName) => {
-  return route.name === routeName;
-};
-
-const displayName = userStore.displayName;
-const handleLogout = async () => {
-
-  try {
-    await userStore.logout(); // Wywołaj akcję logout ze store'a
-    console.log('Wylogowano pomyślnie poprzez store. Spring Security powinien przekierować.');
-    window.location.href = 'http://localhost:8080/loginpage'; // Zapewnij przekierowanie całej przeglądarki
-  } catch (error) {
-    console.error('Błąd podczas wylogowywania z sidebara:', error);
-    alert('Wystąpił błąd podczas wylogowywania. Spróbuj ponownie.');
-    window.location.href = 'http://localhost:8080/loginpage'; // Przekieruj nawet w przypadku błędu
-  }
-
-
-};
-
-</script>
-
-
 <template>
   <div class="app-sidebar d-flex flex-column flex-shrink-0 p-3 bg-light vh-100">
 
-    <div class="dropdown "> <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle sidebar-user-link" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-person-circle me-2 sidebar-link-icon"></i>
-      <strong>{{ displayName }}</strong>
-    </a>
+    <div class="dropdown ">
+      <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle sidebar-user-link" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle me-2 sidebar-link-icon"></i>
+        <strong>{{ displayName }}</strong>
+      </a>
       <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
         <li><router-link class="dropdown-item" :to="{ name: 'settings' }">Ustawienia</router-link></li>
         <li><router-link class="dropdown-item" :to="{ name: 'profile' }">Profil</router-link></li>
@@ -48,8 +15,7 @@ const handleLogout = async () => {
     </div>
     <hr>
 
-    <button class="btn text-start fw-bold fs-5 sidebar-add-task-btn"
-            data-bs-toggle="modal" data-bs-target="#addTaskModal">
+    <button class="btn text-start fw-bold fs-5 sidebar-add-task-btn" @click="requestNewTaskModal">
       <span class="sidebar-custom-plus-icon me-2"> <i class="bi bi-plus-lg"></i> </span>
       Dodaj zadanie
     </button>
@@ -87,20 +53,56 @@ const handleLogout = async () => {
       </li>
     </ul>
 
-    <hr> <ul class="nav nav-pills flex-column "> <li class="nav-item">
-      <a href="#" class="nav-link d-flex align-items-center sidebar-nav-link sidebar-help-link">
-        <i class="bi bi-question-circle me-2 sidebar-link-icon"></i>
-        Pomoc
-      </a>
-    </li>
+    <hr>
+    <ul class="nav nav-pills flex-column ">
+      <li class="nav-item">
+        <a href="#" class="nav-link d-flex align-items-center sidebar-nav-link sidebar-help-link">
+          <i class="bi bi-question-circle me-2 sidebar-link-icon"></i>
+          Pomoc
+        </a>
+      </li>
     </ul>
-
-
   </div>
 </template>
 
-<style scoped>
+<script setup>
+import { useRoute } from 'vue-router'; // Usunięto useRouter, bo nie był używany
+import { useTaskStore } from '../stores/taskStore'; // Poprawiona ścieżka, jeśli taskStore jest w katalogu stores
+import { useUserStore } from '@/stores/userStore';
+import { computed } from 'vue'; // Dodano import computed
 
+const route = useRoute();
+const taskStore = useTaskStore();
+const userStore = useUserStore();
+
+const emit = defineEmits(['open-add-task-modal']); // Definicja emitowanego zdarzenia
+
+const isActive = (routeName) => {
+  return route.name === routeName;
+};
+
+// Użyj computed dla displayName, aby było reaktywne na zmiany w store
+const displayName = computed(() => userStore.displayName);
+
+const handleLogout = async () => {
+  try {
+    await userStore.logout();
+    console.log('Wylogowano pomyślnie poprzez store. Spring Security powinien przekierować.');
+    window.location.href = 'http://localhost:8080/loginpage';
+  } catch (error) {
+    console.error('Błąd podczas wylogowywania z sidebara:', error);
+    alert('Wystąpił błąd podczas wylogowywania. Spróbuj ponownie.');
+    // window.location.href = 'http://localhost:8080/loginpage'; // Już jest w bloku try
+  }
+};
+
+const requestNewTaskModal = () => {
+  emit('open-add-task-modal'); // Emituj zdarzenie do rodzica (App.vue)
+};
+</script>
+
+<style scoped>
+/* Twoje style CSS pozostają bez zmian */
 :root {
   --sidebar-yellow-dark: #f6ce5d;
   --sidebar-yellow-light: #ffc100;
@@ -119,7 +121,7 @@ const handleLogout = async () => {
 
 .sidebar-add-task-btn {
   background-color: var(--sidebar-yellow-dark);
-  color: #ffc100;
+  /* color: #ffc100; Usunięto, bo nadpisywane przez text-start */
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
@@ -129,7 +131,7 @@ const handleLogout = async () => {
 
 .sidebar-add-task-btn:hover {
   background-color: rgba(128, 128, 128, 0.07);
-  color: #ffc100;
+  /* color: #ffc100; */
 }
 
 .sidebar-custom-plus-icon {
@@ -190,7 +192,8 @@ const handleLogout = async () => {
 
 .sidebar-badge {
   background-color: var(--sidebar-yellow-dark);
-  color: #f6ce5d;
+  /* color: #f6ce5d; */ /* Powodowało, że tekst był niewidoczny na żółtym tle */
+  color: #343a40; /* Ciemniejszy kolor dla lepszego kontrastu */
   font-size: 0.9rem;
   padding: 0.25em 0.5em;
   border-radius: 0.25rem;
@@ -248,5 +251,4 @@ hr {
 .app-sidebar .nav:last-child {
   margin-bottom: 0 !important;
 }
-
 </style>

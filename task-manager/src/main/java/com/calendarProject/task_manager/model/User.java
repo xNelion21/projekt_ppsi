@@ -1,12 +1,9 @@
 package com.calendarProject.task_manager.model;
-
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List; // Import dla List
-import java.util.ArrayList; // Import dla ArrayList
 import java.util.Set;
 
 @Entity
@@ -16,28 +13,28 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, unique = true)
     private String email;
-
     @Column(nullable = false)
     private String password;
-
     private String nickname;
     private String languagePreference = "pl";
     private String themePreference = "light";
-
     private Integer age;
     private String gender;
     private String profileImageUrl;
 
     @Column(nullable = false)
     private boolean enabled = true;  // Określa, czy użytkownik jest aktywny
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private Set<String> roles = new HashSet<>(); // Przechowywanie ról użytkownika
+
+    @ManyToMany(mappedBy = "assignedUsers", fetch = FetchType.LAZY)
+    private Set<Task> assignedTasks = new HashSet<>();
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Task> createdTasks = new HashSet<>();
 
     // Konstruktor bezparametrowy (wymagany przez JPA)
     public User() {
@@ -126,6 +123,18 @@ public class User implements UserDetails {
         this.profileImageUrl = profileImageUrl;
 
     }
+
+    public Set<Task> getAssignedTasks() {
+        return assignedTasks;
+    }
+
+    public void setAssignedTasks(Set<Task> assignedTasks) {
+        this.assignedTasks = assignedTasks;
+    }
+
+    public Set<Task> getCreatedTasks() { return createdTasks; }
+    public void setCreatedTasks(Set<Task> createdTasks) { this.createdTasks = createdTasks; }
+
 
     // Implementacja metod z UserDetails
     @Override
