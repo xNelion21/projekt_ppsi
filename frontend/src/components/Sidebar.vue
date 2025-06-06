@@ -1,88 +1,23 @@
-<template>
-  <div class="app-sidebar d-flex flex-column flex-shrink-0 p-3 bg-light vh-100">
-
-    <div class="dropdown ">
-      <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle sidebar-user-link" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-person-circle me-2 sidebar-link-icon"></i>
-        <strong>{{ displayName }}</strong>
-      </a>
-      <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-        <li><router-link class="dropdown-item" :to="{ name: 'settings' }">Ustawienia</router-link></li>
-        <li><router-link class="dropdown-item" :to="{ name: 'profile' }">Profil</router-link></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#" @click.prevent="handleLogout">Wyloguj</a></li>
-      </ul>
-    </div>
-    <hr>
-
-    <button class="btn text-start fw-bold fs-5 sidebar-add-task-btn" @click="requestNewTaskModal">
-      <span class="sidebar-custom-plus-icon me-2"> <i class="bi bi-plus-lg"></i> </span>
-      Dodaj zadanie
-    </button>
-
-    <ul class="nav nav-pills flex-column mb-auto">
-      <li class="nav-item mb-1">
-        <router-link :to="{ name: 'inbox' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('inbox') }">
-          <i class="bi bi-inbox-fill me-2 sidebar-link-icon"></i>
-          Skrzynka <span class="badge ms-auto sidebar-badge">{{ taskStore.todoTasks.length }}</span>
-        </router-link>
-      </li>
-      <li class="nav-item mb-1">
-        <router-link :to="{ name: 'today' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('today') }" aria-current="page">
-          <i class="bi bi-calendar-day me-2 sidebar-link-icon"></i>
-          Dziś <span class="badge ms-auto sidebar-badge">{{taskStore.todayTasks.length}}</span>
-        </router-link>
-      </li>
-      <li class="nav-item mb-1">
-        <router-link :to="{ name: 'upcoming' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('upcoming') }">
-          <i class="bi bi-calendar-week me-2 sidebar-link-icon"></i>
-          Nadchodzące <span class="badge ms-auto sidebar-badge">{{ taskStore.upcomingTasks.length }}</span>
-        </router-link>
-      </li>
-      <li class="nav-item mb-1">
-        <router-link :to="{ name: 'completed' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('completed') }">
-          <i class="bi bi-check-circle me-2 sidebar-link-icon"></i>
-          Ukończone
-        </router-link>
-      </li>
-      <li class="nav-item mb-1">
-        <router-link :to="{ name: 'calendar' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('calendar') }">
-          <i class="bi bi-calendar3 me-2 sidebar-link-icon"></i>
-          Kalendarz
-        </router-link>
-      </li>
-    </ul>
-
-    <hr>
-    <ul class="nav nav-pills flex-column ">
-      <li class="nav-item">
-        <a href="#" class="nav-link d-flex align-items-center sidebar-nav-link sidebar-help-link">
-          <i class="bi bi-question-circle me-2 sidebar-link-icon"></i>
-          Pomoc
-        </a>
-      </li>
-    </ul>
-  </div>
-</template>
-
 <script setup>
-import { useRoute } from 'vue-router'; // Usunięto useRouter, bo nie był używany
-import { useTaskStore } from '../stores/taskStore'; // Poprawiona ścieżka, jeśli taskStore jest w katalogu stores
+import { useRoute } from 'vue-router';
+import { useTaskStore } from '../stores/taskStore';
 import { useUserStore } from '@/stores/userStore';
-import { computed } from 'vue'; // Dodano import computed
+import { computed, onMounted } from 'vue';
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
 const taskStore = useTaskStore();
 const userStore = useUserStore();
+const { locale, t } = useI18n();
 
-const emit = defineEmits(['open-add-task-modal']); // Definicja emitowanego zdarzenia
+const emit = defineEmits(['open-add-task-modal']);
 
 const isActive = (routeName) => {
   return route.name === routeName;
 };
 
-// Użyj computed dla displayName, aby było reaktywne na zmiany w store
 const displayName = computed(() => userStore.displayName);
+
 
 const handleLogout = async () => {
   try {
@@ -92,46 +27,107 @@ const handleLogout = async () => {
   } catch (error) {
     console.error('Błąd podczas wylogowywania z sidebara:', error);
     alert('Wystąpił błąd podczas wylogowywania. Spróbuj ponownie.');
-    // window.location.href = 'http://localhost:8080/loginpage'; // Już jest w bloku try
+
   }
 };
 
 const requestNewTaskModal = () => {
-  emit('open-add-task-modal'); // Emituj zdarzenie do rodzica (App.vue)
+  emit('open-add-task-modal');
 };
 </script>
 
-<style scoped>
-/* Twoje style CSS pozostają bez zmian */
-:root {
-  --sidebar-yellow-dark: #f6ce5d;
-  --sidebar-yellow-light: #ffc100;
-  --sidebar-grey-text: #6c757d;
-  --sidebar-dark-text: #343a40;
-  --sidebar-black-text: #000;
-}
 
+<template>
+  <div class="app-sidebar d-flex flex-column flex-shrink-0 p-3 vh-100">
+
+    <div class="dropdown ">
+      <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle sidebar-user-link" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle me-2 sidebar-link-icon"></i>
+        <strong>{{ displayName }}</strong>
+      </a>
+      <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+        <li><router-link class="dropdown-item" :to="{ name: 'settings' }">{{ t('navigation.settings') }}</router-link></li>
+        <li><router-link class="dropdown-item" :to="{ name: 'profile' }">{{ t('navigation.profile') }}</router-link></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" @click.prevent="handleLogout">{{ t('navigation.logout') }}</a></li>
+      </ul>
+    </div>
+    <hr>
+
+    <button class="btn text-start fw-bold fs-5 sidebar-add-task-btn" @click="requestNewTaskModal">
+      <span class="sidebar-custom-plus-icon me-2"> <i class="bi bi-plus-lg"></i> </span>
+      {{ t('navigation.addTask') }}
+    </button>
+
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item mb-1">
+        <router-link :to="{ name: 'inbox' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('inbox') }">
+          <i class="bi bi-inbox-fill me-2 sidebar-link-icon"></i>
+          {{t('navigation.inbox')}} <span class="badge ms-auto sidebar-badge">{{ taskStore.todoTasks.length }}</span>
+        </router-link>
+      </li>
+      <li class="nav-item mb-1">
+        <router-link :to="{ name: 'today' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('today') }" aria-current="page">
+          <i class="bi bi-calendar-day me-2 sidebar-link-icon"></i>
+          {{ t('navigation.today') }} <span class="badge ms-auto sidebar-badge">{{taskStore.todayTasks.length}}</span>
+        </router-link>
+      </li>
+      <li class="nav-item mb-1">
+        <router-link :to="{ name: 'upcoming' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('upcoming') }">
+          <i class="bi bi-calendar-week me-2 sidebar-link-icon"></i>
+          {{ t('navigation.upcoming') }} <span class="badge ms-auto sidebar-badge">{{ taskStore.upcomingTasks.length }}</span>
+        </router-link>
+      </li>
+      <li class="nav-item mb-1">
+        <router-link :to="{ name: 'completed' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('completed') }">
+          <i class="bi bi-check-circle me-2 sidebar-link-icon"></i>
+          {{ t('navigation.completed') }}
+        </router-link>
+      </li>
+      <li class="nav-item mb-1">
+        <router-link :to="{ name: 'calendar' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('calendar') }">
+          <i class="bi bi-calendar3 me-2 sidebar-link-icon"></i>
+          {{ t('navigation.calendar') }}
+        </router-link>
+      </li>
+    </ul>
+
+    <hr>
+    <ul class="nav nav-pills flex-column ">
+      <li class="nav-item">
+        <a href="#" class="nav-link d-flex align-items-center sidebar-nav-link sidebar-help-link">
+          <i class="bi bi-question-circle me-2 sidebar-link-icon"></i>
+          {{ t('navigation.help') }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<style scoped>
 
 .app-sidebar {
-  background-color: #fefcf5 !important;
-  border-right: 1px solid #e9ecef;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
   width: 280px;
   padding-bottom: 15px !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar-add-task-btn {
-  background-color: var(--sidebar-yellow-dark);
-  /* color: #ffc100; Usunięto, bo nadpisywane przez text-start */
+  background-color: var(--sidebar-accent-btn-bg);
+  color: var(--color-text);
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
   font-size: 1.4rem !important;
   margin-bottom: 1rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .sidebar-add-task-btn:hover {
-  background-color: rgba(128, 128, 128, 0.07);
-  /* color: #ffc100; */
+  background-color: var(--sidebar-accent-btn-hover-bg);
+  color: var(--sidebar-accent-btn-text);
 }
 
 .sidebar-custom-plus-icon {
@@ -140,7 +136,7 @@ const requestNewTaskModal = () => {
   align-items: center;
   width: 24px;
   height: 24px;
-  background-color: #ffbd00 !important;
+  background-color: #fdd34a !important;
   border-radius: 50%;
   flex-shrink: 0;
   vertical-align: middle;
@@ -153,12 +149,12 @@ const requestNewTaskModal = () => {
 }
 
 .sidebar-nav-link {
-  color: var(--sidebar-black-text, #000);
+  color: var(--sidebar-text);
   border-radius: 5px;
   margin-bottom: 0;
   padding: 10px 15px;
   text-decoration: none;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   font-size: 1rem;
 }
 
@@ -167,88 +163,110 @@ const requestNewTaskModal = () => {
 }
 
 .sidebar-nav-link:hover {
-  background-color: rgba(128, 128, 128, 0.07);
-  color: var(--sidebar-black-text, #000);
+  background-color: var(--sidebar-hover-bg);
+  color: var(--sidebar-text);
 }
 
 .sidebar-nav-link.active {
-  background-color: rgba(250, 243, 211, 0.5) !important;
-  color: #ffbd00 !important;
+  background-color: var(--sidebar-active-bg) !important;
+  color: var(--sidebar-active-text) !important;
 }
 
 .sidebar-nav-link .sidebar-link-icon {
-  color: var(--sidebar-grey-text);
+  color: var(--sidebar-text-mute);
   vertical-align: middle;
   transition: color 0.2s ease;
   font-size: 1rem;
 }
+
 .sidebar-nav-link:hover .sidebar-link-icon {
-  color: var(--sidebar-dark-text);
+  color: var(--sidebar-text);
 }
 
 .sidebar-nav-link.active .sidebar-link-icon {
-  color: var(--sidebar-yellow-light, #ffbe00);
+  color: var(--sidebar-active-text);
 }
 
 .sidebar-badge {
-  background-color: var(--sidebar-yellow-dark);
-  /* color: #f6ce5d; */ /* Powodowało, że tekst był niewidoczny na żółtym tle */
-  color: #343a40; /* Ciemniejszy kolor dla lepszego kontrastu */
+  color: var(--sidebar-active-text);
   font-size: 0.9rem;
   padding: 0.25em 0.5em;
   border-radius: 0.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .sidebar-nav-link.active .sidebar-badge {
-  background-color: #f6ce5d;
-  color: white;
+  color: var(--sidebar-active-text);
 }
 
 .sidebar-user-link {
-  color: var(--sidebar-dark-text);
+  color: var(--sidebar-text);
   padding: 10px 15px;
   border-radius: 5px;
-  transition: background-color 0.2s ease;
-}
-.sidebar-user-link:hover {
-  background-color: rgba(128, 128, 128, 0.07);
-  color: var(--sidebar-dark-text);
-}
-.sidebar-user-link .bi {
-  color: var(--sidebar-grey-text);
-  transition: color 0.2s ease;
-}
-.sidebar-user-link:hover .bi {
-  color: var(--sidebar-dark-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+.sidebar-user-link:hover {
+  background-color: var(--sidebar-hover-bg);
+  color: var(--sidebar-text);
+}
+
+.sidebar-user-link .bi {
+  color: var(--sidebar-text-mute);
+  transition: color 0.2s ease;
+}
+
+.sidebar-user-link:hover .bi {
+  color: var(--sidebar-text);
+}
 
 .sidebar-help-link {
-  color: var(--sidebar-dark-text);
+  color: var(--sidebar-text);
   padding: 10px 15px;
   border-radius: 5px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
+
 .sidebar-help-link:hover {
-  background-color: rgba(128, 128, 128, 0.07);
-  color: var(--sidebar-dark-text);
+  background-color: var(--sidebar-hover-bg);
+  color: var(--sidebar-text);
 }
+
 .sidebar-help-link .bi {
-  color: var(--sidebar-grey-text);
+  color: var(--sidebar-text-mute);
   transition: color 0.2s ease;
 }
+
 .sidebar-help-link:hover .bi {
-  color: var(--sidebar-dark-text);
+  color: var(--sidebar-text);
 }
 
 hr {
-  border-top: 1px solid rgba(0, 0, 0, .1);
+  border-top: 1px solid var(--color-text-mute);
   margin-top: 1rem;
   margin-bottom: 1rem;
   opacity: 0.5;
+  transition: border-color 0.3s ease;
 }
 
 .app-sidebar .nav:last-child {
   margin-bottom: 0 !important;
 }
+
+strong {
+  color: var(--color-text);
+}
+
+.dropdown-menu  {
+  background-color: var(--color-background);
+}
+
+.dropdown-item {
+  color: var(--color-text);
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-background-soft);
+}
+
 </style>

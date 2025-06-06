@@ -2,6 +2,12 @@
     --bs-body-font-family: 'Lato', sans-serif;
 }
 
+.navbar.sticky-top {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1020 !important;
+}
+
 .main-btn {
     font-size: 1.7rem;
     background-color: #f0ad4e;
@@ -36,7 +42,7 @@
 .navbar-nav .nav-link::after {
     content: "";
     position: absolute;
-    width: 0%;
+    width: 0;
     height: 2px;
     bottom: 0;
     left: 50%;
@@ -170,4 +176,12 @@
         font-size: 1.8rem;
         padding: 1rem 1.5rem;
     }
+}
+
+
+.contact {
+    background-image: url('images/contact.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }

@@ -14,9 +14,8 @@ import ProfileView from '@/views/ProfileView.vue';
 const routes = [
     {
         path: '/',
-        redirect: '/today'
+        redirect: '/inbox'
     },
-
 
     {
         path: '/inbox',

@@ -3,6 +3,7 @@
 import { computed, ref } from 'vue';
 import { useTaskStore } from '../stores/taskStore.js';
 import { Calendar } from "v-calendar";
+import { useI18n } from "vue-i18n";
 import ToDoItem from "@/components/ToDoItem.vue";
 import AddTaskModal from "@/components/AddTaskModal.vue";
 
@@ -11,6 +12,8 @@ const taskStore = useTaskStore();
 const allTasks = computed(() => taskStore.allTasks);
 
 const today = new Date();
+
+const { t, locale } = useI18n();
 
 const initialPageToday = {
   month: today.getMonth() + 1,
@@ -86,12 +89,20 @@ const handleDayClick = (day) => {
 };
 
 const selectedDayFormatted = computed(() => {
-  if (!selectedDay.value) return '';
+  if (!selectedDay.value) {
+    return t('calendar.noDaySelected');
+  }
 
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Intl.DateTimeFormat('pl-PL', options).format(selectedDay.value);
+  const currentLocale = locale.value;
+  const options = { day: 'numeric', month: 'long' };
+
+  try {
+    return new Intl.DateTimeFormat(currentLocale, options).format(selectedDay.value);
+  } catch (e) {
+    console.error("CalendarView.vue (selectedDayFormatted): Error formatting date with Intl.DateTimeFormat:", selectedDay.value, e);
+    return new Date(selectedDay.value).toLocaleDateString(currentLocale);
+  }
 });
-
 const toggleTaskDone = (taskId) => {
   taskStore.toggleTaskDone(taskId);
 };
@@ -110,7 +121,7 @@ selectedDay.value = today;
 
 <template>
   <div class="view-content mt-4">
-    <div class="view-title mb-3">Kalendarz</div>
+    <div class="view-title mb-3">{{ t('calendar.title') }}</div>
     <div class="calendar-tasks-container">
 
       <calendar
@@ -119,13 +130,13 @@ selectedDay.value = today;
           is-expanded
           title-position="left"
           transition="slide-h"
-          locale="pl"
+          :locale="locale"
           @dayclick="handleDayClick"
           :initial-page = "initialPageToday"
       />
 
       <div v-if="selectedDay" class="selected-day-tasks-section mt-4">
-        <h4 class="selected-day-title tasks-section-title">Zadania na {{ selectedDayFormatted }}</h4>
+        <h4 class="selected-day-title tasks-section-title">{{ t('calendar.tasksFor') }} {{ selectedDayFormatted }}</h4>
 
         <TransitionGroup name="task-list" tag="ul" class="list-group tasks-list-container">
           <ToDoItem
@@ -137,7 +148,7 @@ selectedDay.value = today;
           />
         </TransitionGroup>
         <div v-if="selectedDayTasks.length === 0" class="no-tasks-for-day-message text-muted text-center mt-3">
-          Brak zadań zaplanowanych na ten dzień.
+          {{ t('calendar.noTasks') }}
         </div>
       </div>
 
@@ -155,11 +166,18 @@ selectedDay.value = today;
 
 <style>
 
-.view-container { padding: 30px 20px; }
-.view-header { margin-bottom: 20px; }
-.view-title-section { flex-shrink: 0; }
-.view-title { margin-bottom: 0; font-size: 2.3rem; font-weight: bold; color: #333; line-height: 1.2; }
-.view-content { margin-top: 20px; display: block; }
+.view-title {
+  margin-bottom: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-heading);
+  line-height: 1.2;
+}
+
+.view-content {
+  margin-top: 20px;
+  display: block;
+}
 
 .calendar-tasks-container {
   display: flex;
@@ -169,17 +187,24 @@ selectedDay.value = today;
 }
 
 .custom-calendar.vc-container {
-  border: 1px solid #ddd; border-radius: 8px; font-family: 'Arial', sans-serif; color: #333;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-background-soft);
+  box-shadow: 0 2px 8px var(--color-shadow-light);
   flex: 1 1 600px;
   width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .custom-calendar.vc-container .vc-header {
   padding: 15px 20px;
-  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-evenly;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .custom-calendar.vc-container .vc-header .vc-title {
@@ -187,41 +212,50 @@ selectedDay.value = today;
   text-align: center;
   font-size: 1.3rem;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text) !important;
   visibility: visible;
   opacity: 1;
+  background-color: transparent;
+  transition: color 0.3s ease;
 }
 
 .custom-calendar.vc-container .vc-header .vc-arrows {
-  margin-right: 0 !important;
+  margin-right: 0;
 }
 
-button {
+.custom-calendar.vc-container .vc-header button {
   opacity: 1;
   visibility: visible;
+  color: var(--color-text);
+  transition: color 0.3s ease;
+  margin-bottom: 10px;
+  background-color: var(--color-background);
 }
-
 
 .custom-calendar .vc-weekdays {
   padding: 15px 20px;
-  background-color: #f0f0f0;
-  border-bottom: 1px solid #eee;
+  background-color: var(--color-background-mute);
+  border-bottom: 1px solid var(--color-border);
   font-size: 1.2rem;
-  color: #555;
+  color: var(--color-text-soft);
   margin-bottom: 3px;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .custom-calendar.vc-container div.vc-weeks div.vc-day {
-  padding: 20px 10px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   cursor: pointer;
-  box-sizing: border-box;
-  border-radius: 20px;
+  width: 95px !important;
+  height: 95px !important;
+  border-radius: 55px;
+  margin: 2px;
+  color: var(--color-text);
 }
 
-.custom-calendar.vc-container div.vc-weeks div.vc-day:hover { background-color: #eef; }
-.custom-calendar.vc-container div.vc-weeks div.vc-day.vc-highlight { background-color: #dff ; }
-
+.custom-calendar.vc-container div.vc-weeks div.vc-day.vc-highlight {
+  background-color: var(--color-background-mute);
+  border-color: var(--color-accent);
+}
 
 .custom-calendar.vc-container div.vc-weeks div.vc-day div.vc-day-content {
   font-size: 1.3rem;
@@ -232,24 +266,30 @@ button {
   box-sizing: content-box;
   display: block;
   flex: initial;
-  padding: 10px;
+  padding: 35px;
 }
 
 .custom-calendar.vc-container div.vc-weeks div.vc-day div.vc-dots {
-  margin-top: 6px !important;
-  position: static !important; bottom: initial !important; left: initial !important;
-  transform: none !important; display: block !important; text-align: center;
+  margin-top: 6px;
+  position: static;
+  bottom: initial;
+  left: initial;
+  transform: none;
+  display: block;
+  text-align: center;
 }
 .custom-calendar.vc-container div.vc-weeks div.vc-day .vc-dot {
-  width: 10px !important; height: 10px !important;
-  margin: 0 2px !important; display: inline-block !important;
+  width: 10px;
+  height: 10px;
+  margin: 0 2px;
+  display: inline-block;
 }
 
 .selected-day-tasks-section {
   flex: 1 1 300px;
   width: 100%;
-  border-top: none !important;
-  padding-top: 0 !important;
+  border-top: none;
+  padding-top: 0;
   margin-top: 20px;
 }
 
@@ -257,23 +297,23 @@ button {
   margin-top: 0;
   padding-top: 0;
   border-top: none;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 15px;
+  color: var(--color-heading);
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
-
-.no-tasks-for-day-message
-{
-  font-size: 1rem; color: #999;
+/* Komunikaty o braku zadań */
+.no-tasks-for-day-message, .no-tasks-message {
+  font-size: 1rem;
+  color: var(--color-text-mute);
+  transition: color 0.3s ease;
 }
 
-.no-tasks-message
-{
+.no-tasks-message {
   margin-top: 30px;
   font-size: 1.2rem;
-  color: #999;
 }
-
 
 .task-list-enter-from {
   opacity: 0;
@@ -281,13 +321,12 @@ button {
 
 .task-list-leave-active {
   transition: opacity 0.5s ease;
-  position: absolute;
   left: 0; right: 0;
-  z-index: 1;
 }
 
 .task-list-leave-to {
   opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
 .task-list-move {
@@ -298,4 +337,7 @@ ul.list-group.tasks-list-container {
   position: relative;
 }
 
+span {
+  color: var(--color-text) !important;
+}
 </style>

@@ -1,12 +1,9 @@
 <script setup>
-// === frontend/src/views/UpcomingView.vue script ===
-
 import { useTaskStore } from '../stores/taskStore';
 import { computed } from 'vue';
 
 import TodoItem from '../components/ToDoItem.vue';
-import AddTaskModal from '../components/AddTaskModal.vue'; // Modal Dodaj Zadanie
-
+import AddTaskModal from '../components/AddTaskModal.vue';
 
 const taskStore = useTaskStore();
 
@@ -14,27 +11,6 @@ const tasks = computed(() => taskStore.upcomingTasks);
 
 const taskCount = computed(() => {
   return tasks.value.length;
-});
-
-const taskCountText = computed(() => {
-  const count = taskCount.value;
-
-  if (count === 1) {
-    return 'zadanie';
-  } else if (count >= 2 && count <= 4) {
-    return 'zadania';
-  } else {
-    const lastDigit = count % 10;
-    const lastTwoDigits = count % 100;
-
-    if (lastTwoDigits >= 12 && lastTwoDigits <= 14) {
-      return 'zadań';
-    } else if (lastDigit >= 2 && lastDigit <= 4) {
-      return 'zadania';
-    } else {
-      return 'zadań';
-    }
-  }
 });
 
 const addTask = (newTaskData) => {
@@ -56,10 +32,11 @@ const deleteTask = (taskId) => {
     <div class="view-header d-flex justify-content-between align-items-center">
 
       <div class="view-title-section">
-        <h2 class="view-title">Nadchodzące</h2>
+        <h2 class="view-title">{{ $t('upcoming.title') }}</h2>
         <div v-if="taskCount > 0" class="view-task-count-container">
-          <i class="bi bi-calendar-week me-1 view-task-count-icon"></i> <span class="view-task-count-badge badge rounded-pill bg-warning text-dark">
-               {{ taskCount }} {{ taskCountText }}
+          <i class="bi bi-calendar-week me-1 view-task-count-icon"></i>
+          <span class="view-task-count-badge badge rounded-pill bg-warning text-dark">
+               {{ $t('upcoming.tasksCount', taskCount) }}
            </span>
         </div>
       </div>
@@ -69,7 +46,7 @@ const deleteTask = (taskId) => {
            data-bs-toggle="modal"
            data-bs-target="#addTaskModal">
           <i class="bi bi-plus-lg me-2"></i>
-          Dodaj zadanie
+          {{ $t('tasks.addTask') }}
         </a>
       </div>
     </div>
@@ -88,7 +65,7 @@ const deleteTask = (taskId) => {
     </div>
 
     <div v-if="taskCount === 0" class="no-tasks-message text-muted text-center">
-      Żadnych zaplanowanych spraw! Czas na spontan!
+      {{ $t("upcoming.noTasks") }}
     </div>
 
   </div>
@@ -115,7 +92,7 @@ const deleteTask = (taskId) => {
   margin-bottom: 0;
   font-size: 2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text);
   line-height: 1.2;
 }
 
@@ -124,7 +101,7 @@ const deleteTask = (taskId) => {
   padding: 0;
   margin-left: 6px !important;
   background-color: transparent !important;
-  color: #666 !important;
+  color: var(--color-text-mute) !important;
   font-weight: normal !important;
   line-height: 1.2;
 }
@@ -152,7 +129,7 @@ const deleteTask = (taskId) => {
 .no-tasks-message {
   margin-top: 30px;
   font-size: 1.5rem;
-  color: #999;
+  color: var(--color-text) !important;
 }
 
 .task-list-leave-active {

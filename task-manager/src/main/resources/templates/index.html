@@ -1,27 +1,12 @@
 <!DOCTYPE html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <link rel="stylesheet" type="text/css" th:href="@{css/landingpage_style.css}">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-
-    <link rel="icon" type="image/png" th:href="@{/images/icons8-check-16.png}">
-
-    <title>Taskify - Planowanie nigdy nie było prostsze!</title>
+    <title layout:fragment="title">Taskify - Planowanie nigdy nie było prostsze!</title>
 </head>
-    <body>
-    <div id="app">
-
-        <nav th:insert="~{fragments/navbar :: navbar}"></nav>
-
+<body>
+    <main layout:fragment="content">
         <section class="bg-light text-dark px-5 text-center text-sm-start mb-0 pb-0">
             <div class="container">
                 <div class="d-sm-flex align-items-center justify-content-between">
@@ -39,17 +24,14 @@
         </section>
 
         <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-                        <path fill="#f8f9fa" fill-opacity="1" d="M0,192L60,213.3C120,235,240,277,360,245.3C480,213,600,107,720,96C840,85,960,171,1080,192C1200,213,1320,171,1380,149.3L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+            <path fill="#f8f9fa" fill-opacity="1" d="M0,192L60,213.3C120,235,240,277,360,245.3C480,213,600,107,720,96C840,85,960,171,1080,192C1200,213,1320,171,1380,149.3L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
         </svg>
 
         <section class="steps container-custom">
-
             <div class="row g-0">
-
                 <div class="col-12 col-sm-6 d-md-flex justify-content-md-center">
                     <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
                 </div>
-
                 <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
                     <div class="steps_content-width ">
                         <p class="text-danger fs-4 fw-bold">Planuj rzetelnie</p>
@@ -59,12 +41,10 @@
                 </div>
             </div>
 
-
             <div class="row g-0">
-                 <div class="col-12 col-sm-6 d-md-flex justify-content-md-center order-sm-1">
-                     <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
-                 </div>
-
+                <div class="col-12 col-sm-6 d-md-flex justify-content-md-center order-sm-1">
+                    <img th:src="@{/images/Placeholder_view_vector.svg}" alt="PLACEHOLDER2 Screen z funkcjonalnosci1" class="img-fluid py-4 steps_section-thumbnail mt-3 mr-md-3" loading="lazy" width="600" height="400">
+                </div>
                 <div class="col-12 col-sm-6 align-self-center justify-content-md-center">
                     <div class="steps_content-width">
                         <p class="text-primary fs-4 fw-bold">02</p>
@@ -73,7 +53,6 @@
                     </div>
                 </div>
             </div>
-
 
             <div class="row g-0">
                 <div class="col-12 col-sm-6 d-md-flex justify-content-md-center">
@@ -88,9 +67,6 @@
                 </div>
             </div>
         </section>
-
-        <footer th:insert="~{fragments/footer :: footer}"></footer>
-        </div>
-    </body>
+    </main>
+</body>
 </html>
-

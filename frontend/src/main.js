@@ -5,19 +5,14 @@ import { createPinia } from "pinia";
 import { useUserStore } from '@/stores/userStore';
 import './assets/main.css';
 import 'v-calendar/dist/style.css';
-
-import * as BootstrapVueNextModuleDiagnostics from 'bootstrap-vue-next';
-console.log('Rzeczywiste eksporty z bootstrap-vue-next:', BootstrapVueNextModuleDiagnostics);
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
-console.log('DIAGNOSTYKA - Zawartość BootstrapVueNextModuleDiagnostics:', BootstrapVueNextModuleDiagnostics);
+import i18n from "@/i18n.js";
 
 const app = createApp(App);
 const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
-app.use(BootstrapVueNextModuleDiagnostics);
+app.use(i18n)
 
 console.log('main.js: Aplikacja Vue startuje. Czekam na gotowość routera...');
 router.isReady().then(async () => {

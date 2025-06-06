@@ -1,0 +1,112 @@
+{
+  "app": {
+    "title": "Your To-Do App"
+  },
+  "navigation": {
+    "addTask": "Add Task",
+    "inbox": "Inbox",
+    "today": "Today",
+    "upcoming": "Upcoming",
+    "completed": "Completed",
+    "calendar": "Calendar",
+    "help": "Help",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "tasks": {
+    "addTask": "Add A New Task",
+    "addTaskName": "Title",
+    "date": "Date",
+    "deleteBtn": "Delete",
+    "editBtn": "Edit",
+    "saveBtn": "Save",
+    "cancelBtn": "Cancel",
+    "placeholder": "Make a project for university",
+    "noDueDate": "No due date",
+    "invalidDateFormat": "Invalid date format",
+    "confirmDelete": "Are you sure you want to delete task: \"{taskText}\"?",
+    "titleLabel": "Task title",
+    "descriptionLabel": "Description",
+    "additionalContentLabel": "Additional content (optional)",
+    "dueDateLabel": "Due date",
+    "assignUsersLabel": "Assign users",
+    "loadingUsers": "Loading users...",
+    "noUsersAvailable": "No users to display.",
+    "multipleUsersHint": "Hold Ctrl (or Cmd on Mac) to select/deselect multiple users.",
+    "completedLabel": "Completed",
+    "saveChangesBtn": "Save changes",
+    "addBtn": "Add task",
+    "titleRequiredAlert": "Task title cannot be empty!",
+    "saveError": "An error occurred while saving the task."
+  },
+
+  "calendar": {
+    "title": "Calendar",
+    "tasksFor": "Tasks for ",
+    "noTasks": "No tasks for this day"
+  },
+
+  "completed": {
+    "title": "Completed",
+    "tasksCount": "1 task | {count} tasks",
+    "noCompletedTasks": "When you complete a task, it will appear here!"
+  },
+
+  "upcoming": {
+    "title": "Upcoming",
+    "tasksCount": "1 task | {count} tasks",
+    "noTasks": "Looks like you've got nothing planned!"
+  },
+
+  "today": {
+    "title": "Today",
+    "tasksCount": "1 task | {count} tasks",
+    "noTasks": "You're free today!"
+  },
+
+  "inbox": {
+    "title": "Inbox",
+    "tasksCount": "1 task | {count} tasks",
+    "noTasks": "Your inbox is empty! Great job!",
+    "due": "Due",
+    "other":"Other"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "loading": "Loading settings...",
+    "error": "Error: {message}",
+    "form": {
+      "nicknameLabel": "Nickname:",
+      "languageLabel": "Language:",
+      "themeLabel": "Appearance:",
+      "ageLabel": "Age:",
+      "genderLabel": "Gender:",
+      "languageOptions": {
+        "pl": "Polish",
+        "en": "English"
+      },
+      "themeOptions": {
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "genderOptions": {
+        "notSpecified": "Not specified",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "saveButtonSaving": "Saving...",
+      "saveButtonDefault": "Save Changes",
+      "successMessageSaved": "Changes saved successfully!",
+      "successMessageNoChange": "No changes were made.",
+      "errorMessageGeneric": "An error occurred during save. Check console."
+    }
+  },
+
+
+  "common": {
+    "language": "Language"
+  }
+}

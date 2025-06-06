@@ -57,28 +57,37 @@ import { ref, onMounted, watch } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 
 const userStore = useUserStore();
-const userDataLoaded = ref(false); // Flaga wskazująca, czy próba załadowania danych została zakończona
-const loadError = ref(false);     // Flaga wskazująca, czy wystąpił błąd podczas ładowania
+const userDataLoaded = ref(false);
+const loadError = ref(false);
 
-// Ścieżka do domyślnego obrazka profilowego w folderze `public` Twojego projektu Vue
-const defaultProfileImage = '/img/default-profile.png'; // Upewnij się, że ten plik istnieje
+const defaultProfileImage = 'images/prof.jpg';
 
-// Funkcja do pobierania/synchronizacji danych użytkownika
+const finalImageUrl = ref(defaultProfileImage);
+
+const initializeImageUrl = () => {
+  if (userStore.user && userStore.user.profileImageUrl) {
+    finalImageUrl.value = userStore.user.profileImageUrl;
+  } else {
+    finalImageUrl.value = defaultProfileImage;
+  }
+};
+
 const syncUserData = async () => {
-  // Jeśli użytkownik jest już uwierzytelniony i ma email w store, zakładamy, że dane są załadowane
   if (userStore.isAuthenticated && userStore.user && userStore.user.email) {
     userDataLoaded.value = true;
     loadError.value = false;
+    initializeImageUrl();
   } else {
-    // W przeciwnym razie, spróbuj pobrać dane
-    // userStore.loading będzie zarządzane przez akcję fetchCurrentUser
+
     const success = await userStore.fetchCurrentUser();
     if (success) {
       userDataLoaded.value = true;
       loadError.value = false;
+      initializeImageUrl();
     } else {
-      userDataLoaded.value = false; // Dane nie załadowane (ale fetch zakończony)
-      loadError.value = true;     // Wystąpił błąd
+      userDataLoaded.value = false;
+      loadError.value = true;
+      finalImageUrl.value = defaultProfileImage;
     }
   }
 };
@@ -87,16 +96,15 @@ onMounted(() => {
   syncUserData();
 });
 
-// Obserwuj zmiany w userStore.user (np. po aktualizacji w Ustawieniach), aby odświeżyć widok profilu
 watch(() => userStore.user, (newUser) => {
-  if (newUser && newUser.email) { // Sprawdź, czy nowy użytkownik ma email (wskaźnik załadowanych danych)
+  if (newUser && newUser.email) {
     userDataLoaded.value = true;
     loadError.value = false;
+    initializeImageUrl();
   }
 }, { deep: true });
 
 
-// Funkcje pomocnicze do formatowania wyświetlanych wartości
 const formatGender = (genderKey) => {
   if (!genderKey || genderKey.trim() === '') return 'Nie podano';
   const genders = {
@@ -104,7 +112,7 @@ const formatGender = (genderKey) => {
     female: 'Kobieta',
     other: 'Inna',
   };
-  return genders[genderKey.toLowerCase()] || genderKey; // Zwróć klucz, jeśli nie ma tłumaczenia
+  return genders[genderKey.toLowerCase()] || genderKey;
 };
 
 const formatLanguage = (langKey) => {
@@ -125,37 +133,44 @@ const formatTheme = (themeKey) => {
   return themes[themeKey.toLowerCase()] || themeKey;
 };
 
-// Obsługa błędu ładowania obrazka profilowego - ustawia domyślny obrazek
 const handleImageError = (event) => {
-  event.target.src = defaultProfileImage;
-};
+  console.log("Błąd ładowania obrazka dla:", event.target.src);
+
+  if (finalImageUrl.value === userStore.user?.profileImageUrl) {
+    console.log("Obrazek z profilu użytkownika nie załadowany. Próba załadowania domyślnego.");
+    finalImageUrl.value = defaultProfileImage;
+  }
+}
+
 </script>
 
 <style scoped>
 .profile-image {
-  width: 150px;  /* Możesz dostosować rozmiar */
-  height: 150px;
-  border-radius: 50%; /* Okrągły obrazek */
-  object-fit: cover;   /* Zapewnia, że obrazek dobrze wypełnia ramkę */
-  border: 3px solid #e9ecef; /* Subtelna ramka */
-  background-color: #f8f9fa; /* Tło, na wypadek gdyby obrazek się nie ładował */
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e9ecef;
+  background-color: #f8f9fa;
 }
 
 .card {
-  border: none; /* Usuń domyślną ramkę karty dla czystszego wyglądu */
+  border: none;
+  background-color: var(--color-background-mute);
+  color: var(--color-text);
+  border-radius: 25px;
 }
 
 dt {
-  font-weight: 600; /* Lekko pogrubione etykiety */
-  color: #495057;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 dd {
-  margin-bottom: 0.8rem; /* Odstęp pod wartościami */
-  color: #212529;
+  margin-bottom: 0.8rem;
+  color: var(--color-text-soft);
 }
 
-/* Dodatkowe style dla spinnera, jeśli domyślny jest za mały */
 .spinner-border {
   width: 3rem;
   height: 3rem;

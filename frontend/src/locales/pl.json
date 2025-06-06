@@ -1,0 +1,109 @@
+{
+  "app": {
+    "title": "Taskify"
+  },
+  "navigation": {
+    "addTask": "Dodaj Zadanie",
+    "inbox": "Skrzynka",
+    "today": "Dzisiaj",
+    "upcoming": "Nadchodzące",
+    "completed": "Ukończone",
+    "calendar": "Kalendarz",
+    "help": "Pomoc",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "logout": "Wyloguj"
+  },
+  "tasks": {
+    "addTask": "Dodaj nowe zadanie",
+    "addTaskName": "Tytuł",
+    "date": "Data",
+    "deleteBtn": "Usuń",
+    "editBtn": "Edytuj",
+    "saveBtn": "Zapisz",
+    "cancelBtn": "Anuluj",
+    "placeholder": "Zrób projekt na studia",
+    "noDueDate": "Brak terminu",
+    "invalidDateFormat": "Błędny format daty",
+    "confirmDelete": "Czy na pewno chcesz usunąć zadanie: \"{taskText}\"?",
+    "titleLabel": "Tytuł zadania",
+    "descriptionLabel": "Opis",
+    "additionalContentLabel": "Dodatkowa treść (opcjonalnie)",
+    "dueDateLabel": "Termin wykonania",
+    "assignUsersLabel": "Przypisz użytkowników",
+    "loadingUsers": "Ładowanie użytkowników...",
+    "noUsersAvailable": "Brak użytkowników do wyświetlenia.",
+    "multipleUsersHint": "Przytrzymaj Ctrl (lub Cmd na Mac) aby zaznaczyć/odznaczyć wielu użytkowników.",
+    "completedLabel": "Ukończone",
+    "saveChangesBtn": "Zapisz zmiany",
+    "addBtn": "Dodaj zadanie",
+    "titleRequiredAlert": "Tytuł zadania nie może być pusty!",
+    "saveError": "Wystąpił błąd podczas zapisywania zadania."
+  },
+
+  "calendar": {
+    "title": "Kalendarz",
+    "tasksFor": "Zadania na",
+    "noTasks": "Brak zadań tego dnia"
+  },
+
+  "completed": {
+    "title": "Ukończone",
+    "tasksCount": "0 zadań | 1 zadanie | {count} zadania | {count} zadań",
+    "noCompletedTasks": "Kiedy ukończysz zadanie, znajdziesz je tutaj!"
+  },
+
+  "upcoming": {
+    "title": "Nadchodzące",
+    "tasksCount": "0 zadań | 1 zadanie | {count} zadania | {count} zadań",
+    "noTasks": "Żadnych zaplanowanych spraw! Czas na spontan!"
+  },
+
+  "today": {
+    "title": "Dzisiaj",
+    "tasksCount": "0 zadań | 1 zadanie | {count} zadania | {count} zadań",
+    "noTasks": "Na dziś to wszystko!"
+  },
+
+  "inbox": {
+    "title": "Skrzynka",
+    "tasksCount": "0 zadań | 1 zadanie | {count} zadania | {count} zadań",
+    "noTasks": "Twoja skrzynka jest pusta! Świetna robota!",
+    "due": "Zaległe",
+    "other":"Pozostałe"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "loading": "Ładowanie ustawień...",
+    "error": "Błąd: {message}",
+    "form": {
+      "nicknameLabel": "Pseudonim:",
+      "languageLabel": "Język:",
+      "themeLabel": "Wygląd:",
+      "ageLabel": "Wiek:",
+      "genderLabel": "Płeć:",
+      "languageOptions": {
+        "pl": "Polski",
+        "en": "Angielski"
+      },
+      "themeOptions": {
+        "light": "Jasny",
+        "dark": "Ciemny"
+      },
+      "genderOptions": {
+        "notSpecified": "Nie określono",
+        "male": "Mężczyzna",
+        "female": "Kobieta",
+        "other": "Inne"
+      },
+      "saveButtonSaving": "Zapisywanie...",
+      "saveButtonDefault": "Zapisz zmiany",
+      "successMessageSaved": "Zmiany zapisane pomyślnie!",
+      "successMessageNoChange": "Nie wprowadzono żadnych zmian.",
+      "errorMessageGeneric": "Wystąpił błąd podczas zapisu. Sprawdź konsolę."
+    }
+  },
+  "common": {
+    "language": "Język"
+  }
+}

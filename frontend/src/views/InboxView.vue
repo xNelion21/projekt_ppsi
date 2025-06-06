@@ -30,7 +30,7 @@ const deleteTask = (taskId) => {
     <div class="view-header d-flex justify-content-between align-items-center">
 
       <div class="view-title-section">
-        <h2 class="view-title">Skrzynka</h2>
+        <h2 class="view-title">{{ $t('inbox.title') }}</h2>
       </div>
 
       <div class="view-actions">
@@ -38,7 +38,7 @@ const deleteTask = (taskId) => {
            data-bs-toggle="modal"
            data-bs-target="#addTaskModal">
           <i class="bi bi-plus-lg me-2"></i>
-          Dodaj zadanie
+          {{ $t('tasks.addTask') }}
         </a>
       </div>
     </div>
@@ -47,7 +47,7 @@ const deleteTask = (taskId) => {
 
       <div v-if="overdueTasks.length > 0" class="overdue-tasks-section mb-4">
 
-        <h4 class="tasks-section-title overdue-title">Zaległe</h4>
+        <h4 class="tasks-section-title overdue-title">{{ $t('inbox.due') }}</h4>
 
         <TransitionGroup name="task-list" tag="ul" class="list-group tasks-list-container">
           <TodoItem
@@ -63,8 +63,8 @@ const deleteTask = (taskId) => {
 
       <div v-if="overdueTasks.length > 0 || remainingTasks.length > 0" class="remaining-tasks-section">
 
-        <h4 v-if="overdueTasks.length > 0" class="tasks-section-title remaining-title">Pozostałe</h4>
-        <h4 v-else-if="remainingTasks.length > 0" class="tasks-section-title remaining-title">Skrzynka</h4>
+        <h4 v-if="overdueTasks.length > 0" class="tasks-section-title remaining-title">{{ $t('inbox.other') }}</h4>
+        <h4 v-else-if="remainingTasks.length > 0" class="tasks-section-title remaining-title">{{ $t('inbox.title') }}</h4>
 
 
         <TransitionGroup name="task-list" tag="ul" class="list-group tasks-list-container">
@@ -79,7 +79,7 @@ const deleteTask = (taskId) => {
 
       </div>
       <div v-if="overdueTasks.length === 0 && remainingTasks.length === 0" class="no-tasks-message text-muted text-center">
-        Skrzynka pusta! Świetna robota!
+        {{ $t('inbox.noTasks') }}
       </div>
 
 
@@ -108,7 +108,7 @@ const deleteTask = (taskId) => {
   margin-bottom: 0;
   font-size: 2rem;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text);
   line-height: 1.2;
 }
 
@@ -131,7 +131,7 @@ const deleteTask = (taskId) => {
 .tasks-section-title {
   font-size: 1.3rem;
   font-weight: bold;
-  color: #555;
+  color: var(--color-text-mute);
   margin-bottom: 15px;
   border-bottom: 1px solid #eee;
   padding-bottom: 5px;

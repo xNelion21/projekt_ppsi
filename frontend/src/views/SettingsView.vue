@@ -1,48 +1,48 @@
 <template>
   <div class="container mt-4">
-    <h1>Ustawienia</h1>
-    <p v-if="userStore.loading">Ładowanie ustawień...</p>
-    <p v-if="userStore.error" class="text-danger">{{ userStore.error }}</p>
+    <h1>{{ t('settings.title') }}</h1>
+    <p v-if="userStore.loading">{{ t('settings.loading') }}</p>
+    <p v-if="userStore.error" class="text-danger">{{ t('settings.error', { message: userStore.error }) }}</p>
 
     <form @submit.prevent="saveAllSettings" class="mt-4">
       <div class="mb-3">
-        <label for="nickname" class="form-label">Pseudonim:</label>
+        <label for="nickname" class="form-label">{{ t('settings.form.nicknameLabel') }}</label>
         <input type="text" id="nickname" v-model="formState.nickname" class="form-control" />
       </div>
 
       <div class="mb-3">
-        <label for="languagePreference" class="form-label">Język:</label>
+        <label for="languagePreference" class="form-label">{{ t('settings.form.languageLabel') }}</label>
         <select id="languagePreference" v-model="formState.languagePreference" class="form-select">
-          <option value="pl">Polski</option>
-          <option value="en">English</option>
+          <option value="en-US">{{ t('settings.form.languageOptions.en') }}</option>
+          <option value="pl-PL">{{ t('settings.form.languageOptions.pl') }}</option>
         </select>
       </div>
 
       <div class="mb-3">
-        <label for="themePreference" class="form-label">Wygląd:</label>
+        <label for="themePreference" class="form-label">{{ t('settings.form.themeLabel') }}</label>
         <select id="themePreference" v-model="formState.themePreference" class="form-select">
-          <option value="light">Jasny</option>
-          <option value="dark">Ciemny</option>
+          <option value="light">{{ t('settings.form.themeOptions.light') }}</option>
+          <option value="dark">{{ t('settings.form.themeOptions.dark') }}</option>
         </select>
       </div>
 
       <div class="mb-3">
-        <label for="age" class="form-label">Wiek:</label>
+        <label for="age" class="form-label">{{ t('settings.form.ageLabel') }}</label>
         <input type="number" id="age" v-model.number="formState.age" class="form-control" min="0" />
       </div>
 
       <div class="mb-3">
-        <label for="gender" class="form-label">Płeć:</label>
+        <label for="gender" class="form-label">{{ t('settings.form.genderLabel') }}</label>
         <select id="gender" v-model="formState.gender" class="form-select">
-          <option value="">Nie określono</option>
-          <option value="male">Mężczyzna</option>
-          <option value="female">Kobieta</option>
-          <option value="other">Inne</option>
+          <option value="">{{ t('settings.form.genderOptions.notSpecified') }}</option>
+          <option value="male">{{ t('settings.form.genderOptions.male') }}</option>
+          <option value="female">{{ t('settings.form.genderOptions.female') }}</option>
+          <option value="other">{{ t('settings.form.genderOptions.other') }}</option>
         </select>
       </div>
 
       <button type="submit" class="btn btn-primary" :disabled="userStore.loading">
-        {{ userStore.loading ? 'Zapisywanie...' : 'Zapisz zmiany' }}
+        {{ userStore.loading ? t('settings.form.saveButtonSaving') : t('settings.form.saveButtonDefault') }}
       </button>
       <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
     </form>
@@ -52,22 +52,24 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import { useI18n } from 'vue-i18n';
 
 const userStore = useUserStore();
+const { t, locale } = useI18n();
 const successMessage = ref(null);
 
 const formState = reactive({
   nickname: '',
-  languagePreference: 'pl',
-  themePreference: 'light',
+  languagePreference: localStorage.getItem('userLanguage') || 'en-US',
+  themePreference: localStorage.getItem('theme') || 'light',
   age: null,
   gender: '',
 });
 
 const syncFormWithStore = () => {
   formState.nickname = userStore.user.nickname || '';
-  formState.languagePreference = userStore.user.languagePreference || 'pl';
-  formState.themePreference = userStore.user.themePreference || 'light';
+  formState.languagePreference = userStore.user.languagePreference || localStorage.getItem('userLanguage') || 'en-US';
+  formState.themePreference = userStore.user.themePreference || localStorage.getItem('theme') || 'light';
   formState.age = userStore.user.age === undefined ? null : userStore.user.age;
   formState.gender = userStore.user.gender || '';
 };
@@ -103,12 +105,12 @@ const saveAllSettings = async () => {
       profileDataPayload.age !== userStore.user.age ||
       profileDataPayload.gender !== userStore.user.gender;
 
-  if (profileDataPayload.age === null && userStore.user.age === undefined && profileDataPayload.gender === null && userStore.user.gender === undefined) {
-    // Special case if initial values are undefined and form sets them to null, treat as no change if they were conceptually "empty"
-    if (formState.age === null && userStore.user.age === undefined) profileActuallyChanged = false;
-    else if (formState.gender === '' && userStore.user.gender === undefined) profileActuallyChanged = false;
+  if (formState.age === null && (userStore.user.age === undefined || userStore.user.age === null)) {
+    profileActuallyChanged = profileActuallyChanged && (profileDataPayload.age !== null);
   }
-
+  if (formState.gender === '' && (userStore.user.gender === undefined || userStore.user.gender === null)) {
+    profileActuallyChanged = profileActuallyChanged && (profileDataPayload.gender !== null);
+  }
 
   let overallSuccess = true;
 
@@ -116,11 +118,25 @@ const saveAllSettings = async () => {
     const settingsUpdateSuccess = await userStore.updateSettings(settingsDataPayload);
     if (!settingsUpdateSuccess) {
       overallSuccess = false;
+    } else {
+      if (formState.languagePreference !== locale.value) {
+        locale.value = formState.languagePreference;
+        localStorage.setItem('userLanguage', formState.languagePreference);
+      }
+
+      if (formState.themePreference !== localStorage.getItem('theme')) {
+        localStorage.setItem('theme', formState.themePreference);
+        if (formState.themePreference === 'dark') {
+          document.documentElement.classList.add('dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark-mode');
+        }
+      }
     }
   }
 
   if (overallSuccess && profileActuallyChanged) {
-    if (userStore.error) { // If an error occurred from updateSettings, don't proceed
+    if (userStore.error) {
       overallSuccess = false;
     } else {
       const profileUpdateSuccess = await userStore.updateProfile(profileDataPayload);
@@ -132,18 +148,15 @@ const saveAllSettings = async () => {
 
   if (overallSuccess) {
     if (settingsActuallyChanged || profileActuallyChanged) {
-      successMessage.value = 'Zmiany zapisane pomyślnie!';
+      successMessage.value = t('settings.form.successMessageSaved');
       syncFormWithStore();
     } else {
-      successMessage.value = 'Nie wprowadzono żadnych zmian.';
+      successMessage.value = t('settings.form.successMessageNoChange');
     }
   } else {
     if (!userStore.error) {
-      // This case should ideally not happen if actions set error on failure
-      // but as a fallback:
-      successMessage.value = 'Wystąpił błąd podczas zapisu. Sprawdź konsolę.';
+      successMessage.value = t('settings.form.errorMessageGeneric');
     }
-    // Error message from userStore.error will be displayed by the template
   }
 
   setTimeout(() => {
@@ -153,5 +166,22 @@ const saveAllSettings = async () => {
 </script>
 
 <style scoped>
-/* Dodaj style dla formularza ustawień, jeśli potrzebujesz */
+
+
+.form-select {
+  background-color: var(--color-background-soft);
+  color: var(--color-text);
+  border: none;
+}
+
+.form-control{
+  background-color: var(--color-background-soft);
+  color: var(--color-text);
+  border: none;
+}
+
+label {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
 </style>
