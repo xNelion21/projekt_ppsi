@@ -4,8 +4,10 @@ import com.calendarProject.task_manager.dto.UserSettingsRequestDTO;
 import com.calendarProject.task_manager.dto.UserProfileRequestDTO;
 import com.calendarProject.task_manager.model.User;
 import com.calendarProject.task_manager.repository.UserRepository;
+import com.calendarProject.task_manager.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,16 +21,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserRepository userRepository;
-    private static final String UPLOAD_DIR = "uploads/profile_images/"; // Katalog do przechowywania zdjęć
+    private final UserService userService;
+
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    public UserController(UserRepository userRepository) {
+    @Value("${file.base-upload-dir}")
+    private String baseUploadDir;
+
+    public UserController(UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     // Pomocnicza metoda do pobierania aktualnie zalogowanego użytkownika
@@ -47,28 +55,15 @@ public class UserController {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        boolean changed = false;
-        if (settingsRequest.getNickname() != null && !settingsRequest.getNickname().equals(currentUser.getNickname())) {
-            currentUser.setNickname(settingsRequest.getNickname());
-            changed = true;
+        try {
+            // ZMIEŃ TĘ LINIĘ: Wywołaj metodę w UserService, przekazując DTO
+            User updatedUser = userService.updateUserSettings(currentUser.getId(), settingsRequest);
+            logger.info("Ustawienia użytkownika {} zostały zaktualizowane.", updatedUser.getEmail());
+            return ResponseEntity.ok(AuthController.getUserSummaryDTO(updatedUser));
+        } catch (RuntimeException e) {
+            logger.error("Błąd podczas aktualizacji ustawień dla użytkownika {}: {}", currentUser.getEmail(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        if (settingsRequest.getLanguagePreference() != null && !settingsRequest.getLanguagePreference().equals(currentUser.getLanguagePreference())) {
-            currentUser.setLanguagePreference(settingsRequest.getLanguagePreference());
-            changed = true;
-        }
-        if (settingsRequest.getThemePreference() != null && !settingsRequest.getThemePreference().equals(currentUser.getThemePreference())) {
-            currentUser.setThemePreference(settingsRequest.getThemePreference());
-            changed = true;
-        }
-
-        if (changed) {
-            userRepository.save(currentUser);
-            logger.info("Ustawienia użytkownika {} zostały zaktualizowane.", currentUser.getEmail());
-        } else {
-            logger.info("Brak zmian w ustawieniach dla użytkownika {}.", currentUser.getEmail());
-        }
-        // Zawsze zwracaj UserSummaryDTO, nawet jeśli nie było zmian, aby frontend miał aktualne dane
-        return ResponseEntity.ok(AuthController.getUserSummaryDTO(currentUser)); // Lub UserMapper.toUserSummaryDTO(currentUser)
     }
 
 
@@ -78,24 +73,15 @@ public class UserController {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        boolean changed = false;
-        if (profileRequest.getAge() != null && !profileRequest.getAge().equals(currentUser.getAge())) {
-            currentUser.setAge(profileRequest.getAge());
-            changed = true;
+        try {
+            // ZMIEŃ TĘ LINIĘ: Wywołaj metodę w UserService, przekazując DTO
+            User updatedUser = userService.updateUserProfile(currentUser.getId(), profileRequest);
+            logger.info("Profil użytkownika {} został zaktualizowany.", updatedUser.getEmail());
+            return ResponseEntity.ok(AuthController.getUserSummaryDTO(updatedUser));
+        } catch (RuntimeException e) {
+            logger.error("Błąd podczas aktualizacji profilu dla użytkownika {}: {}", currentUser.getEmail(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        if (profileRequest.getGender() != null && !profileRequest.getGender().equals(currentUser.getGender())) {
-            currentUser.setGender(profileRequest.getGender());
-            changed = true;
-        }
-
-        if (changed) {
-            userRepository.save(currentUser);
-            logger.info("Profil użytkownika {} został zaktualizowany.", currentUser.getEmail());
-        } else {
-            logger.info("Brak zmian w profilu dla użytkownika {}.", currentUser.getEmail());
-        }
-        return ResponseEntity.ok(AuthController.getUserSummaryDTO(currentUser)); // Lub UserMapper.toUserSummaryDTO(currentUser)
     }
 
 
@@ -112,24 +98,36 @@ public class UserController {
 
         try {
             // Upewnij się, że katalog do uploadu istnieje
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            Path profileUploadPath = Paths.get(baseUploadDir, "profile_images");
+            if (!Files.exists(profileUploadPath)) {
+                Files.createDirectories(profileUploadPath);
             }
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            String newFilename = UUID.randomUUID().toString() + fileExtension;
+            Path filePath = profileUploadPath.resolve(newFilename);
 
-            // Unikalna nazwa pliku, aby uniknąć kolizji
-            String fileName = currentUser.getId() + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath);
 
-            // Zapisz ścieżkę do obrazu w bazie danych
-            currentUser.setProfileImageUrl("/" + UPLOAD_DIR + fileName); // Ścieżka URL dostępna z frontendu
-            userRepository.save(currentUser);
+            // UJEDNOLICENIE ŚCIEŻEK: Ścieżka URL, którą frontend będzie używał.
+            // Ważne: /uploads/ jest mapowane w WebConfig na baseUploadDir.
+            // "/profile_images/" jest podfolderem, który stworzyliśmy fizycznie i logicznie.
+            String imageUrl = "/uploads/profile_images/" + newFilename;
 
+            // DELEGUJ ZAPIS DO BAZY DANYCH DO SERWISU
+            userService.updateProfileImageUrl(currentUser.getId(), imageUrl);
+
+            logger.info("Zdjęcie profilowe dla użytkownika {} zostało przesłane pomyślnie. URL: {}", currentUser.getEmail(), imageUrl);
             return ResponseEntity.ok("Zdjęcie profilowe zostało przesłane pomyślnie.");
         } catch (IOException e) {
             logger.error("Nie udało się przesłać pliku dla użytkownika {}: {}", (currentUser.getEmail()), e.getMessage(), e);
             return ResponseEntity.status(500).body("Nie udało się przesłać pliku: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Wystąpił nieoczekiwany błąd podczas przesyłania zdjęcia dla użytkownika {}: {}", currentUser.getEmail(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił nieoczekiwany błąd: " + e.getMessage());
         }
     }
 }

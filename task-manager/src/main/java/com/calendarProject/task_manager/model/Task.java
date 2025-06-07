@@ -17,9 +17,6 @@ public class Task {
 
     private String description; // Domyślnie mapuje na kolumnę "description"
 
-    @Column(name = "text") // POPRAWKA: Mapuje pole 'text' na kolumnę "text" w bazie danych
-    private String text;
-
     @Column(name = "due_date") // Mapuje na kolumnę "due_date"
     private LocalDate dueDate;
 
@@ -48,9 +45,6 @@ public class Task {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
-    public String getText() { return text; }
-    public void setText(String text) { this.text = text; }
 
     public LocalDate getDueDate() { return dueDate; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }

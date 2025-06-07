@@ -3,7 +3,7 @@
   <nav> <a href="http://localhost:8080/loginpage">Login</a> |
     <router-link to="/dashboard">Dashboard</router-link></nav>
   <div class="container mt-4">
-    <h1 class="mb-3">Witaj, uzytkowniku !</h1>
+    <h1 class="mb-3">Witaj, {{ userStore.displayName }} !</h1>
     <button class="btn btn-danger mb-4" @click="handleLogout">Wyloguj</button>
 
     <h2>Zadania</h2>

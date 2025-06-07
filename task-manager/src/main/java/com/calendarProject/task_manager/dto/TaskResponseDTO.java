@@ -1,13 +1,10 @@
-
 package com.calendarProject.task_manager.dto;
-
 import java.util.Set;
 
 public class TaskResponseDTO {
     private Long id;
     private String title;
     private String description;
-    private String text;
     private String dueDate; // Represented as String (e.g., "YYYY-MM-DD") for response
     private boolean completed;
     private UserSummaryDTO creator;
@@ -38,13 +35,7 @@ public class TaskResponseDTO {
         this.description = description;
     }
 
-    public String getText() {
-        return text;
-    }
 
-    public void setText(String text) {
-        this.text = text;
-    }
 
     public String getDueDate() {
         return dueDate;

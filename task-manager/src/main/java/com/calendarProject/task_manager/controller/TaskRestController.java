@@ -7,6 +7,8 @@ import com.calendarProject.task_manager.model.Task;
 import com.calendarProject.task_manager.model.User;
 import com.calendarProject.task_manager.repository.UserRepository;
 import com.calendarProject.task_manager.service.TaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +28,13 @@ public class TaskRestController {
 
     private final TaskService taskService;
     private final UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TaskRestController.class);
 
     @Autowired
     public TaskRestController(TaskService taskService, UserRepository userRepository) {
         this.taskService = taskService;
         this.userRepository = userRepository;
+
     }
 
     // Metoda pomocnicza do pobrania zalogowanego użytkownika
@@ -54,7 +58,6 @@ public class TaskRestController {
         dto.setId(task.getId());
         dto.setTitle(task.getTitle());
         dto.setDescription(task.getDescription());
-        dto.setText(task.getText());
         dto.setDueDate(task.getDueDate() != null ? task.getDueDate().toString() : null);
         dto.setCompleted(task.isCompleted());
 
@@ -86,14 +89,12 @@ public class TaskRestController {
         Task task = new Task();
         task.setTitle(taskRequest.getTitle());
         task.setDescription(taskRequest.getDescription());
-        task.setText(taskRequest.getText());
 
         if (taskRequest.getDueDate() != null && !taskRequest.getDueDate().isEmpty()) {
             try {
                 task.setDueDate(LocalDate.parse(taskRequest.getDueDate()));
             } catch (DateTimeParseException e) {
-                // Zwracamy ResponseEntity.badRequest() bezpośrednio z tej metody,
-                // sygnalizując błąd parsowania daty.
+
                 return ResponseEntity.badRequest().body(null);
             }
         }
@@ -117,7 +118,9 @@ public class TaskRestController {
 
         assert taskToCreate != null;
         Task createdTask = taskService.createTask(taskToCreate, currentUser.getId(), taskRequest.getAssignedUserIds());
+        logger.info("User '{}' created a new task with ID {} and title '{}'.", currentUser.getEmail(), createdTask.getId(), createdTask.getTitle());
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(createdTask));
+
     }
 
     @GetMapping("/my-tasks")
@@ -161,6 +164,7 @@ public class TaskRestController {
 
         try {
             Task updatedTask = taskService.updateTask(taskId, taskDetails, currentUser.getId());
+            logger.info("User '{}' updated task with ID {}.", currentUser.getEmail(), taskId);
             return ResponseEntity.ok(convertToDTO(updatedTask));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -199,6 +203,7 @@ public class TaskRestController {
         User currentUser = getCurrentUser();
         try {
             taskService.deleteTask(taskId, currentUser.getId());
+            logger.info("User '{}' deleted task with ID {}.", currentUser.getEmail(), taskId);
             return ResponseEntity.noContent().build();
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

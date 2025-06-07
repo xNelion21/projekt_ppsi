@@ -23,7 +23,6 @@ const taskData = ref({
   id: null,
   title: '',
   description: '',
-  text: '',
   dueDate: '',
   assignedUserIds: [],
   completed: false,
@@ -36,7 +35,6 @@ const resetForm = () => {
   taskData.value.id = null;
   taskData.value.title = '';
   taskData.value.description = '';
-  taskData.value.text = '';
   taskData.value.dueDate = '';
   taskData.value.assignedUserIds = [];
   taskData.value.completed = false;
@@ -70,7 +68,6 @@ watch(() => props.taskToEdit, (currentTask) => {
     taskData.value.id = currentTask.id;
     taskData.value.title = currentTask.title || '';
     taskData.value.description = currentTask.description || '';
-    taskData.value.text = currentTask.text || '';
     taskData.value.dueDate = currentTask.dueDate ? currentTask.dueDate.split('T')[0] : '';
     taskData.value.assignedUserIds = currentTask.assignedUsers ? currentTask.assignedUsers.map(u => u.id).filter(id => id != null) : [];
     taskData.value.completed = currentTask.completed || false;
@@ -97,7 +94,6 @@ const saveTask = async () => {
   const payload = {
     title: taskData.value.title.trim(),
     description: taskData.value.description?.trim() || '',
-    text: taskData.value.text?.trim() || '',
     dueDate: taskData.value.dueDate || null,
     assignedUserIds: taskData.value.assignedUserIds || [],
   };
@@ -175,10 +171,6 @@ defineExpose({ openModalForNewTask, modalShow }); // Udostępnij modalShow, aby 
         <textarea class="form-control" id="taskDescription" rows="2" v-model="taskData.description"></textarea>
       </div>
 
-      <div class="mb-3">
-        <label for="taskText" class="form-label">{{ t('tasks.additionalContentLabel') }}</label>
-        <textarea class="form-control" id="taskText" rows="4" v-model="taskData.text"></textarea>
-      </div>
 
       <div class="row">
         <div class="col-md-6 mb-3">

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
+const BACKEND_BASE_URL = 'http://localhost:8080';
 export const useUserStore = defineStore('user', {
     state: () => ({
         user: {
@@ -27,7 +28,7 @@ export const useUserStore = defineStore('user', {
             this.loading = true;
             this.error = null;
             try {
-                const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
+                const response = await axios.post(`${BACKEND_BASE_URL}/api/auth/login`, { email, password });
                 const { email: userEmail, nickname, languagePreference, themePreference } = response.data;
 
                 this.user.email = userEmail;
@@ -57,7 +58,7 @@ export const useUserStore = defineStore('user', {
             this.error = null;
             try {
 
-                const response = await axios.get('http://localhost:8080/api/auth/me');
+                const response = await axios.get(`${BACKEND_BASE_URL}/api/auth/me`);
                 const userData = response.data;
                 this.user.id = userData.id
                 this.user.email = userData.email;
@@ -66,7 +67,9 @@ export const useUserStore = defineStore('user', {
                 this.user.themePreference = userData.themePreference;
                 this.user.age = userData.age;
                 this.user.gender = userData.gender;
-                this.user.profileImageUrl = userData.profileImageUrl;
+                this.user.profileImageUrl = userData.profileImageUrl
+                    ? `${BACKEND_BASE_URL}${userData.profileImageUrl}`
+                    : null;
                 this.isAuthenticated = true;
                 console.log('userStore: fetchCurrentUser successful, user data with ID:', this.user);
                 return true;
@@ -85,7 +88,7 @@ export const useUserStore = defineStore('user', {
             this.error = null;
             console.log('Wysyłane dane ustawień DO BACKENDU:', JSON.stringify(settingsData));
             try {
-                const response = await axios.put('http://localhost:8080/api/users/me/settings', settingsData);
+                const response = await axios.put(`${BACKEND_BASE_URL}/api/users/me/settings`, settingsData);
                 this.user.nickname = response.data.nickname;
                 this.user.languagePreference = response.data.languagePreference;
                 this.user.themePreference = response.data.themePreference;
@@ -101,7 +104,7 @@ export const useUserStore = defineStore('user', {
             this.loading = true;
             this.error = null;
             try {
-                const response = await axios.put('http://localhost:8080/api/users/me/profile', profileData);
+                const response = await axios.put(`${BACKEND_BASE_URL}/api/users/me/profile`, profileData); // Użyj BACKEND_BASE_URL
                 this.user.age = response.data.age;
                 this.user.gender = response.data.gender;
                 return true;

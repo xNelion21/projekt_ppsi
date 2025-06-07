@@ -33,7 +33,6 @@ public class TaskService {
         Task newTask = new Task();
         newTask.setTitle(taskDetails.getTitle());
         newTask.setDescription(taskDetails.getDescription());
-        newTask.setText(taskDetails.getText());
         newTask.setDueDate(taskDetails.getDueDate());
         newTask.setCompleted(false); // Domyślnie nieukończone
         newTask.setCreator(creator);
@@ -76,7 +75,6 @@ public class TaskService {
 
         existingTask.setTitle(taskDetails.getTitle());
         existingTask.setDescription(taskDetails.getDescription());
-        existingTask.setText(taskDetails.getText());
         existingTask.setDueDate(taskDetails.getDueDate());
         existingTask.setCompleted(taskDetails.isCompleted());
 

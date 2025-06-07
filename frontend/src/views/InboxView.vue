@@ -33,14 +33,7 @@ const deleteTask = (taskId) => {
         <h2 class="view-title">{{ $t('inbox.title') }}</h2>
       </div>
 
-      <div class="view-actions">
-        <a href="#" class="text-decoration-none add-task-btn"
-           data-bs-toggle="modal"
-           data-bs-target="#addTaskModal">
-          <i class="bi bi-plus-lg me-2"></i>
-          {{ $t('tasks.addTask') }}
-        </a>
-      </div>
+
     </div>
 
     <div class="view-content mt-4">
@@ -64,7 +57,6 @@ const deleteTask = (taskId) => {
       <div v-if="overdueTasks.length > 0 || remainingTasks.length > 0" class="remaining-tasks-section">
 
         <h4 v-if="overdueTasks.length > 0" class="tasks-section-title remaining-title">{{ $t('inbox.other') }}</h4>
-        <h4 v-else-if="remainingTasks.length > 0" class="tasks-section-title remaining-title">{{ $t('inbox.title') }}</h4>
 
 
         <TransitionGroup name="task-list" tag="ul" class="list-group tasks-list-container">

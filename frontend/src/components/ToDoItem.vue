@@ -11,7 +11,7 @@ const props = defineProps({
     required: true,
     validator: (value) => {
       return typeof value.id === 'number' &&
-          typeof value.text === 'string' &&
+          typeof value.title === 'string' &&
           typeof value.completed === 'boolean';
     }
   }
@@ -28,7 +28,7 @@ const handleToggleComplete = async (task) => {
 };
 
 const handleDeleteTask = () => {
-  const isConfirmed = confirm(t('tasks.confirmDelete', { taskText: props.task.text }));
+  const isConfirmed = confirm(t('tasks.confirmDelete', { taskText: props.task.title }));
   if (isConfirmed) {
     emit('deleteTask', props.task.id);
     console.log(`Potwierdzono usunięcie zadania: ${props.task.id}`);
@@ -123,7 +123,7 @@ const formattedDueDate = computed(() => {
             :for="'task-' + props.task.id"
             class="todo-text mb-0"
             :class="{ 'todo-done': props.task.completed }" >
-          {{ props.task.text }}
+          {{ props.task.title }}
         </label>
 
         <div class="todo-meta small mt-1">

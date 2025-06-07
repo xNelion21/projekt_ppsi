@@ -60,7 +60,7 @@ const userStore = useUserStore();
 const userDataLoaded = ref(false);
 const loadError = ref(false);
 
-const defaultProfileImage = 'images/prof.jpg';
+const defaultProfileImage = '/images/prof.jpg';
 
 const finalImageUrl = ref(defaultProfileImage);
 
@@ -134,10 +134,13 @@ const formatTheme = (themeKey) => {
 };
 
 const handleImageError = (event) => {
-  console.log("Błąd ładowania obrazka dla:", event.target.src);
+  console.error("Błąd ładowania obrazka dla:", event.target.src);
 
-  if (finalImageUrl.value === userStore.user?.profileImageUrl) {
-    console.log("Obrazek z profilu użytkownika nie załadowany. Próba załadowania domyślnego.");
+  if (event.target.src === defaultProfileImage) {
+    event.target.src = '';
+    console.warn("Domyślny obrazek profilowy (/images/prof.jpg) również nie może być załadowany. Sprawdź, czy plik jest w public/images/.");
+  } else {
+
     finalImageUrl.value = defaultProfileImage;
   }
 }
