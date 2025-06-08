@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router';
 import { useTaskStore } from '../stores/taskStore';
 import { useUserStore } from '@/stores/userStore';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from "vue-i18n";
 
 const route = useRoute();
@@ -10,7 +10,8 @@ const taskStore = useTaskStore();
 const userStore = useUserStore();
 const { locale, t } = useI18n();
 
-const emit = defineEmits(['open-add-task-modal']);
+const emit = defineEmits(['open-add-task-modal', 'open-help-modal']);
+
 
 const isActive = (routeName) => {
   return route.name === routeName;
@@ -33,6 +34,10 @@ const handleLogout = async () => {
 
 const requestNewTaskModal = () => {
   emit('open-add-task-modal');
+};
+
+const requestHelpModal = () => {
+  emit('open-help-modal');
 };
 </script>
 
@@ -60,6 +65,12 @@ const requestNewTaskModal = () => {
     </button>
 
     <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item mb-1">
+        <router-link :to="{ name: 'dashboard' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('dashboard') }">
+          <i class="bi-layout-text-window-reverse me-2 sidebar-link-icon"></i>
+          {{t('navigation.dashboard')}}
+        </router-link>
+      </li>
       <li class="nav-item mb-1">
         <router-link :to="{ name: 'inbox' }" class="nav-link d-flex align-items-center sidebar-nav-link" :class="{ 'active': isActive('inbox') }">
           <i class="bi bi-inbox-fill me-2 sidebar-link-icon"></i>
@@ -95,10 +106,10 @@ const requestNewTaskModal = () => {
     <hr>
     <ul class="nav nav-pills flex-column ">
       <li class="nav-item">
-        <a href="#" class="nav-link d-flex align-items-center sidebar-nav-link sidebar-help-link">
+        <router-link :to="{ name: 'help'}" class="nav-link d-flex align-items-center sidebar-nav-link sidebar-help-link">
           <i class="bi bi-question-circle me-2 sidebar-link-icon"></i>
           {{ t('navigation.help') }}
-        </a>
+        </router-link>
       </li>
     </ul>
   </div>
@@ -268,5 +279,7 @@ strong {
 .dropdown-item:hover {
   background-color: var(--color-background-soft);
 }
+
+
 
 </style>

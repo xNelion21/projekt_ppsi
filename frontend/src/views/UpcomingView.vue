@@ -1,11 +1,13 @@
 <script setup>
 import { useTaskStore } from '../stores/taskStore';
-import { computed } from 'vue';
+import {computed, ref} from 'vue';
 
 import TodoItem from '../components/ToDoItem.vue';
 import AddTaskModal from '../components/AddTaskModal.vue';
 
 const taskStore = useTaskStore();
+
+const taskToEdit = ref(null);
 
 const tasks = computed(() => taskStore.upcomingTasks);
 
@@ -13,12 +15,17 @@ const taskCount = computed(() => {
   return tasks.value.length;
 });
 
+const handleEditTask = (task) => {
+  console.log("TaskListView: Otrzymano zadanie do edycji:", task);
+  taskToEdit.value = task;
+};
+
 const addTask = (newTaskData) => {
   taskStore.addTask(newTaskData);
 };
 
 const toggleTaskDone = (taskId) => {
-  taskStore.toggleTaskDone(taskId);
+  taskStore.toggleTaskCompletion(taskId);
 };
 
 const deleteTask = (taskId) => {
@@ -40,15 +47,6 @@ const deleteTask = (taskId) => {
            </span>
         </div>
       </div>
-
-      <div class="view-actions">
-        <a href="#" class="text-decoration-none add-task-btn"
-           data-bs-toggle="modal"
-           data-bs-target="#addTaskModal">
-          <i class="bi bi-plus-lg me-2"></i>
-          {{ $t('tasks.addTask') }}
-        </a>
-      </div>
     </div>
 
     <div class="view-content mt-4">
@@ -59,6 +57,7 @@ const deleteTask = (taskId) => {
         :task="task"
         @toggleDone="toggleTaskDone"
         @deleteTask="deleteTask"
+        @editTask="handleEditTask"
         />
       </TransitionGroup>
 
@@ -70,7 +69,11 @@ const deleteTask = (taskId) => {
 
   </div>
 
-  <AddTaskModal @taskAdded="addTask" />
+  <AddTaskModal
+      :taskToEdit="taskToEdit"
+      @closed="taskToEdit = null"
+      ref="addTaskModal"
+  />
 
 </template>
 
@@ -101,7 +104,7 @@ const deleteTask = (taskId) => {
   padding: 0;
   margin-left: 6px !important;
   background-color: transparent !important;
-  color: var(--color-text-mute) !important;
+  color: var(--color-text-soft) !important;
   font-weight: normal !important;
   line-height: 1.2;
 }

@@ -17,7 +17,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['toggleDone', 'deleteTask']);
+const emit = defineEmits(['toggleDone', 'deleteTask', 'editTask']);
 
 const taskStore = useTaskStore()
 
@@ -35,6 +35,11 @@ const handleDeleteTask = () => {
   } else {
     console.log(`Anulowano usunięcie zadania: ${props.task.id}`);
   }
+};
+
+const handleEditTask = () => {
+  console.log(`TodoItem.vue: Próba edycji zadania ID: ${props.task.id}`);
+  emit('editTask', props.task);
 };
 
 
@@ -126,6 +131,11 @@ const formattedDueDate = computed(() => {
           {{ props.task.title }}
         </label>
 
+        <!-- Dodajemy description -->
+        <div v-if="props.task.description && props.task.description.trim() !== ''" class="todo-description small mt-1 text-muted">
+          {{ props.task.description }}
+        </div>
+
         <div class="todo-meta small mt-1">
           <span :class="{
             'text-danger': isDueDatePast,
@@ -139,6 +149,9 @@ const formattedDueDate = computed(() => {
     </div>
 
     <div class="todo-item-right">
+      <button @click="handleEditTask" class="btn btn-sm btn-outline-warning me-2 todo-edit-btn">
+        {{ t('tasks.editBtn') }} <i class="bi bi-pencil"></i>
+      </button>
       <button @click="handleDeleteTask" class="btn btn-sm btn-outline-danger todo-delete-btn">
         {{ t('tasks.deleteBtn') }} <i class="bi bi-trash"></i>
       </button>
@@ -232,15 +245,17 @@ const formattedDueDate = computed(() => {
 
 .todo-meta .text-danger { color: var(--color-danger) !important; }
 .todo-meta .text-warning { color: var(--color-warning) !important; }
-.todo-meta .text-muted { color: var(--color-text-mute) !important; }
+.todo-meta .text-muted { color: var(--color-text-soft) !important;; }
 
 .todo-item-right {
   flex-shrink: 0;
 }
 
-.todo-delete-btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
+.todo-description {
+  font-size: 0.9rem;
+  color: var(--color-text-soft) !important;
+  line-height: 1.3;
 }
+
 
 </style>

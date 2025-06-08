@@ -10,11 +10,18 @@ import SettingsView from '@/views/SettingsView.vue';
 import ProfileView from '@/views/ProfileView.vue';
 
 import ResetPasswordView from '../views/ResetPasswordView.vue'
+import HelpView from "@/views/HelpView.vue";
 
 const routes = [
     {
         path: '/',
-        redirect: '/inbox'
+        redirect: '/dashboard'
+    },
+
+    {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: DashboardView,
     },
 
     {
@@ -23,7 +30,7 @@ const routes = [
         component: InboxView
     },
     {
-        path: '/reset-password', // <-- DODAJ NOWĄ ŚCIEŻKĘ
+        path: '/reset-password',
         name: 'reset-password',
         component: ResetPasswordView
     },
@@ -50,13 +57,6 @@ const routes = [
     },
 
     {
-        path: '/dashboard',
-        name: 'dashboard',
-        component: DashboardView,
-
-    },
-
-    {
         path: '/settings',
         name: 'settings',
         component: SettingsView,
@@ -66,6 +66,12 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: ProfileView,
+
+    },
+    {
+        path: '/help',
+        name: 'help',
+        component: HelpView,
 
     }
 

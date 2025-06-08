@@ -3,7 +3,7 @@ import {reactive} from 'vue';
 import axios from "axios";
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8080/api', // Twój adres backendu
+    baseURL: 'http://localhost:8080/api',
     withCredentials: true
 });
 
@@ -38,13 +38,6 @@ export const useTaskStore = defineStore('taskStore', {
     state: () => ({
 
         tasks: reactive([
-            { id: 1, text: 'Nauczyć się Vue', completed: false, dueDate: '2025-06-15' },
-            { id: 2, text: 'Zbudować formularz zadań', completed: true, dueDate: '2025-04-20' },
-            { id: 3, text: 'Połączyć z backendem Spring Boot', completed: false, dueDate: '2025-06-01' },
-            { id: 4, text: 'Zadanie na dzisiaj - test', completed: false, dueDate: getFormattedTodayDate() },
-            { id: 5, text: 'Zadanie przeterminowane', completed: false, dueDate: '2025-05-01' },
-            { id: 6, text: 'Zadanie ukończone przeterminowane', completed: true, dueDate: '2025-05-02' },
-            { id: 7, text: 'Zadanie ukończone na dzisiaj', completed: true, dueDate: getFormattedTodayDate() }
         ]),
     }),
 
@@ -128,7 +121,6 @@ export const useTaskStore = defineStore('taskStore', {
 
     actions: {
 
-        // TODO: Ta akcja będzie wywoływać endpoint API GET /tasks
         async fetchAllUsers() {
             this.isLoading = true;
             this.error = null;
@@ -148,25 +140,22 @@ export const useTaskStore = defineStore('taskStore', {
             this.error = null;
             try {
                 const response = await apiClient.get('/tasks/my-tasks');
-                this.tasks = response.data; // Oczekujemy listy TaskResponseDTO
+                this.tasks = response.data;
             } catch (err) {
                 this.error = err.response?.data?.message || err.message || 'Failed to fetch tasks';
                 console.error("Error fetching tasks:", err);
-                this.tasks = []; // Wyczyść w razie błędu
+                this.tasks = [];
             } finally {
                 this.isLoading = false;
             }
         },
-        async addTask(taskData) { // taskData to obiekt TaskRequestDTO
+        async addTask(taskData) {
             this.isLoading = true;
             this.error = null;
             try {
-                // taskData = { title, description, text, dueDate (YYYY-MM-DD), assignedUserIds (Set<Long>) }
                 const response = await apiClient.post('/tasks', taskData);
-                // Można dodać nowo utworzone zadanie do listy lub przeładować wszystkie
-                this.tasks.push(response.data); // response.data to TaskResponseDTO
-                // lub await this.fetchMyTasks();
-                return true; // Sukces
+                this.tasks.push(response.data);
+                return true;
             } catch (err) {
                 this.error = err.response?.data?.message || err.message || 'Failed to add task';
                 console.error("Error adding task:", err);
@@ -175,15 +164,15 @@ export const useTaskStore = defineStore('taskStore', {
                 this.isLoading = false;
             }
         },
-        async updateTask(taskId, taskData) { // taskData to obiekt TaskRequestDTO
+
+        async editTask(taskId, taskData) {
             this.isLoading = true;
             this.error = null;
             try {
-                // taskData = { title, description, text, dueDate, completed, assignedUserIds }
                 const response = await apiClient.put(`/tasks/${taskId}`, taskData);
                 const index = this.tasks.findIndex(t => t.id === taskId);
                 if (index !== -1) {
-                    this.tasks[index] = response.data; // response.data to TaskResponseDTO
+                    this.tasks[index] = response.data;
                 }
                 return true;
             } catch (err) {
@@ -194,6 +183,7 @@ export const useTaskStore = defineStore('taskStore', {
                 this.isLoading = false;
             }
         },
+
         async toggleTaskCompletion(taskId) {
             this.isLoading = true;
             this.error = null;
@@ -213,7 +203,6 @@ export const useTaskStore = defineStore('taskStore', {
             }
         },
 
-
         async deleteTask(taskId) {
             this.isLoading = true;
             this.error = null;
@@ -229,7 +218,7 @@ export const useTaskStore = defineStore('taskStore', {
                 this.isLoading = false;
             }
         },
-        async assignUsersToTask(taskId, userIds) { // userIds to Set<Long>
+        async assignUsersToTask(taskId, userIds) {
             this.isLoading = true;
             this.error = null;
             try {

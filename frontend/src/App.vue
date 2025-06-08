@@ -23,6 +23,7 @@
             :taskToEdit="currentTaskForEdit"
             @taskSaved="handleTaskSaved"
             @closed="handleModalClosed" />
+
       </div>
     </div>
   </div>
@@ -343,19 +344,74 @@ main {
 
 .main-content-col {
   display: flex;
-  flex-direction: column; /* Układamy elementy (przycisk i treść) jeden pod drugim */
-  height: 100vh;         /* Kolumna zajmuje 100% wysokości okna przeglądarki */
+  flex-direction: column;
+  height: 100vh;
 }
 
-/* 2. Upewniamy się, że kontener z przyciskiem do chowania menu nie rozciąga się */
 .main-content-col > .simple-toggle-button-container {
-  flex-shrink: 0; /* Zapobiega kurczeniu się tego elementu */
+  flex-shrink: 0;
 }
 
-/* 3. Mówimy głównemu obszarowi <main>, aby rósł i pozwalał się przewijać */
 .main-content-col > main {
-  flex-grow: 1;       /* Pozwala temu elementowi rosnąć i wypełnić całą dostępną przestrzeń */
-  overflow-y: auto;   /* Włącza pionowe przewijanie, gdy treść się nie mieści */
+  flex-grow: 1;
+  overflow-y: auto;
 }
+
+.modal-content {
+  background-color: var(--color-background-soft);
+  color: var(--color-text);
+  border-radius: 0.3rem;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 0 15px var(--color-shadow);
+}
+
+.modal-header,
+.modal-footer {
+  background-color: var(--color-background-mute);
+  border-color: var(--color-border);
+  color: var(--color-text-soft);
+}
+
+.modal-header .btn-close {
+  filter: none;
+}
+
+.modal-body {
+  background-color: var(--color-background-soft);
+  color: var(--color-text);
+}
+
+/* Przykład przycisków w modalach */
+.btn-primary {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+  color: var(--color-text);
+}
+
+
+html.dark-mode .modal-content {
+  box-shadow: 0 0 15px var(--color-shadow);
+}
+
+html.dark-mode .modal-header,
+html.dark-mode .modal-footer {
+  color: var(--color-text-mute);
+}
+
+html.dark-mode .modal-header .btn-close {
+  filter: invert(1);
+}
+
+
+.modal-footer {
+  display: none !important;
+}
+
 
 </style>

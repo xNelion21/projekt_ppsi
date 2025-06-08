@@ -4,6 +4,7 @@
   },
   "navigation": {
     "addTask": "Add Task",
+    "dashboard": "Dashboard",
     "inbox": "Inbox",
     "today": "Today",
     "upcoming": "Upcoming",
@@ -14,6 +15,22 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+
+  "dashboard": {
+    "welcome": "Welcome, {name}!",
+    "logout": "Logout",
+    "allTasks": "All Tasks",
+    "completed": "Completed",
+    "overdue": "Overdue",
+    "addNewTask": "Add New Task",
+    "upcomingTasks": "Upcoming Tasks",
+    "noUpcomingTasks": "No upcoming tasks.",
+    "overdueTasks": "Overdue Tasks",
+    "noOverdueTasks": "No overdue tasks.",
+    "latestTasks": "Latest Added Tasks",
+    "noLatestTasks": "No new tasks."
+  },
+
   "tasks": {
     "addTask": "Add A New Task",
     "addTaskName": "Title",
@@ -105,6 +122,39 @@
     }
   },
 
+  "help": {
+    "title": "Help Center",
+    "intro": "Welcome to Taskify's Help Center! Here you'll find answers to common questions about using our application.",
+    "sections": {
+      "gettingStarted": {
+        "title": "Getting Started",
+        "content": "To start using Taskify, log in to your account. If you don't have one, you can easily register. Once logged in, your inbox will be ready for your first tasks."
+      },
+      "addTask": {
+        "title": "Adding a New Task",
+        "content": "Click the 'Add Task' button in the sidebar. In the dialog box, you can enter a task title, description, additional content, due date, and assign it to other users. The title is the only required field."
+      },
+      "navigation": {
+        "title": "Navigating the App",
+        "inbox": "Inbox",
+        "inboxDesc": "Here you'll find all your tasks that are not yet completed and do not have a specific 'today' or 'upcoming' due date.",
+        "today": "Today",
+        "todayDesc": "Displays tasks that are due today. Ideal for a quick overview of your daily priorities.",
+        "upcoming": "Upcoming",
+        "upcomingDesc": "Contains tasks with future due dates, allowing you to plan ahead.",
+        "completed": "Completed",
+        "completedDesc": "A list of all tasks you've marked as done. You can review them here and, if needed, mark them as uncompleted.",
+        "calendar": "Calendar",
+        "calendarDesc": "A calendar view that allows you to browse tasks assigned to specific days. Helps visualize your schedule."
+      },
+      "settings": {
+        "title": "Settings and Profile",
+        "content": "In the 'Settings' section, you can manage your nickname, language preferences, app theme (light/dark), age, and gender. The 'Profile' section allows you to change your profile picture and review basic account details."
+      }
+    },
+    "contactUs": "If you need further assistance, please contact us at",
+    "closeButton": "Close"
+  },
 
   "common": {
     "language": "Language"

@@ -44,9 +44,8 @@
                     <input type="password" id="password" name="password" class="form-control form-control-lg bg-light fs-6" placeholder="Hasło" required>
                 </div>
                 <div class="input-group mb-5 d-flex justify-content-between">
-                    <div class="form-check">
-                        <input type="checkbox" id="rememberMe" class="form-check-input" name="rememberMe">
-                        <label for="rememberMe" class="form-check-label text-secondary">Zapamiętaj mnie</label>
+                    <div class="noAccount">
+                        <a th:href="@{/register}">Nie masz konta?</a>
                     </div>
                     <div class="forgot">
                         <a href="#" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">Nie pamiętasz hasła?</a>
@@ -54,8 +53,6 @@
                     <div th:if="${error}">
                         <p style="color: red;" th:text="${error}"></p>
                     </div>
-
-
                 </div>
                 <div class="input-group mb-3">
                     <button class="btn btn-lg btn-warning w-100 fs-5 text-white fw-bold btn-login mt-4">Zaloguj się</button>

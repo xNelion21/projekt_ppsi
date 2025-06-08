@@ -66,8 +66,13 @@
 }
 
 .steps_section-thumbnail {
-    object-fit: cover;
+    max-width: 600px;
+    max-height: 800px;
+    height: auto;
+    display: block;
     margin: 0 auto;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 @media (min-width: 576px) and (max-width: 991px) {

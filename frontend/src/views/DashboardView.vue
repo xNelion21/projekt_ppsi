@@ -1,72 +1,59 @@
-<template>
-
-  <nav> <a href="http://localhost:8080/loginpage">Login</a> |
-    <router-link to="/dashboard">Dashboard</router-link></nav>
-  <div class="container mt-4">
-    <h1 class="mb-3">Witaj, {{ userStore.displayName }} !</h1>
-    <button class="btn btn-danger mb-4" @click="handleLogout">Wyloguj</button>
-
-    <h2>Zadania</h2>
-
-    <!-- Formularz dodawania zadania -->
-    <form @submit.prevent="addTask" class="mb-4">
-      <div class="mb-3">
-        <input v-model="newTask.title" class="form-control" placeholder="Tytuł zadania" required />
-      </div>
-      <div class="mb-3">
-        <input v-model="newTask.description" class="form-control" placeholder="Opis zadania" />
-      </div>
-      <button type="submit" class="btn btn-primary">Dodaj zadanie</button>
-    </form>
-
-    <!-- Lista zadań -->
-    <div v-if="tasks.length > 0">
-      <ul class="list-group">
-        <li v-for="task in tasks" :key="task.id" class="list-group-item d-flex align-items-center justify-content-between">
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input me-2" :checked="task.completed" @change="toggleTaskCompletion(task)" />
-            <span :class="{ 'text-decoration-line-through': task.completed }">
-              <strong>{{ task.title }}</strong> – {{ task.description }}
-            </span>
-          </div>
-          <div>
-            <button class="btn btn-sm btn-outline-success me-2" @click="editTask(task)">✏️</button>
-            <button class="btn btn-sm btn-outline-danger" @click="deleteTask(task.id)">🗑️</button>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <div v-else>
-      <p>Brak zadań do wyświetlenia.</p>
-    </div>
-  </div>
-</template>
-
 <script>
 import axios from 'axios';
-//import AuthService from '@/services/authService';
 import { useUserStore } from '@/stores/userStore';
+import TodoItem from '@/components/ToDoItem.vue';
+import AddTaskModal from '../components/AddTaskModal.vue';
+
 
 export default {
   name: 'DashboardView',
+  components: {
+    TodoItem,
+    AddTaskModal
+  },
   setup() {
-    const userStore = useUserStore(); // Użyj user store
-    return { userStore }; // Udostępnij userStore w szablonie
+    const userStore = useUserStore();
+    return { userStore };
   },
   data() {
     return {
       tasks: [],
-      newTask: {
-        title: '',
-        description: ''
-      }
+      taskToEdit: null,
+      isAddTaskModalVisible: false
     };
+  },
+  computed: {
+    completedTasks() {
+      return this.tasks.filter(task => task.completed).length;
+    },
+    overdueTasks() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return this.tasks.filter(task => {
+        if (!task.dueDate) return false;
+        const dueDate = new Date(task.dueDate);
+        dueDate.setHours(0, 0, 0, 0);
+        return dueDate < today && !task.completed;
+      });
+    },
+    upcomingTasks() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return this.tasks.filter(task => {
+        if (!task.dueDate) return false;
+        const dueDate = new Date(task.dueDate);
+        dueDate.setHours(0, 0, 0, 0);
+        return dueDate >= today && !task.completed;
+      });
+    },
+    latestTasks() {
+      return [...this.tasks].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+    }
   },
   methods: {
     async handleLogout() {
       try {
         await this.userStore.logout();
-        console.log('Wylogowano pomyślnie poprzez store. Spring Security powinien przekierować.');
         window.location.href = 'http://localhost:8080/loginpage';
       } catch (error) {
         console.error('Błąd podczas wylogowywania:', error);
@@ -76,20 +63,8 @@ export default {
       try {
         const response = await axios.get('http://localhost:8080/api/tasks/my-tasks');
         this.tasks = response.data;
-        console.log('ŁADUJĘ ZADANIA...');
       } catch (error) {
         console.error('Błąd przy pobieraniu zadań:', error);
-      }
-    },
-    async addTask() {
-      try {
-        const response = await axios.post('http://localhost:8080/api/tasks', this.newTask);
-        this.tasks.push(response.data);
-        this.newTask.title = '';
-        this.newTask.description = '';
-        this.loadTasks();
-      } catch (error) {
-        console.error('Błąd przy dodawaniu zadania:', error);
       }
     },
     async deleteTask(id) {
@@ -98,10 +73,6 @@ export default {
         this.tasks = this.tasks.filter(task => task.id !== id);
       } catch (error) {
         console.error('Błąd przy usuwaniu zadania:', error);
-        if (error.response && error.response.status === 401) {
-          this.userStore.isAuthenticated = false;
-          window.location.href = 'http://localhost:8080/loginpage';
-        }
       }
     },
     async toggleTaskCompletion(task) {
@@ -110,39 +81,163 @@ export default {
         await axios.put(`http://localhost:8080/api/tasks/${task.id}`, task);
       } catch (error) {
         console.error('Błąd przy aktualizacji statusu zadania:', error);
-        if (error.response && error.response.status === 401) {
-          this.userStore.isAuthenticated = false;
-          window.location.href = 'http://localhost:8080/loginpage';
-        }
       }
     },
-    editTask(task) {
-      const newTitle = prompt('Nowy tytuł:', task.title);
-      const newDesc = prompt('Nowy opis:', task.description);
-
-      if (newTitle !== null || newDesc !== null || newText !== null || newDueDate !== null) {
-        const updatedTask = {
-          ...task, // Skopiuj istniejące dane
-          title: newTitle !== null ? newTitle : task.title,
-          description: newDesc !== null ? newDesc : task.description,
-          text: newText !== null ? newText : (task.text || ''),
-          dueDate: newDueDate !== null ? newDueDate : (task.dueDate ? task.dueDate.split('T')[0] : null)
-        };
-
-        this.toggleTaskCompletion(updatedTask); // wyśle PUT z nowymi danymi
-      }
+    openAddTaskModal() {
+      this.taskToEdit = null;
+      this.isAddTaskModalVisible = true;
+    },
+    openEditTaskModal(task) {
+      this.taskToEdit = { ...task };
+      this.isAddTaskModalVisible = true;
+    },
+    closeModal() {
+      this.taskToEdit = null;
+      this.isAddTaskModalVisible = false;
+    },
+    async onTaskSaved() {
+      await this.loadTasks();
+      this.closeModal();
     }
   },
   mounted() {
-    console.log('DASHBOARD MOUNTED');
-    console.log('UserStore user:', this.userStore.user);
     this.loadTasks();
   }
 };
 </script>
 
+<template>
+  <div class="dashboard-container d-flex">
+
+    <main class="dashboard-main p-4 flex-grow-1">
+
+      <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ $t('dashboard.welcome', { name: userStore.displayName }) }}</h2>
+        <button class="btn btn-danger" @click="handleLogout">{{ $t('dashboard.logout') }}</button>
+      </div>
+
+      <div class="dashboard-stats d-flex mb-4">
+        <div class="stat-card bg-light p-3 me-3 rounded flex-fill text-center">
+          <h5>{{ $t('dashboard.allTasks') }}</h5>
+          <p class="display-6">{{ tasks.length }}</p>
+        </div>
+        <div class="stat-card bg-light p-3 me-3 rounded flex-fill text-center">
+          <h5>{{ $t('dashboard.completed') }}</h5>
+          <p class="display-6">{{ completedTasks }}</p>
+        </div>
+        <div class="stat-card bg-light p-3 me-3 rounded flex-fill text-center">
+          <h5>{{ $t('dashboard.overdue') }}</h5>
+          <p class="display-6">{{ overdueTasks.length }}</p>
+        </div>
+      </div>
+
+      <div class="tasks-section mb-4">
+        <h4>{{ $t('dashboard.upcomingTasks') }}</h4>
+        <ul class="list-group">
+          <TodoItem
+              v-for="task in upcomingTasks"
+              :key="task.id"
+              :task="task"
+              @toggleDone="toggleTaskCompletion"
+              @deleteTask="deleteTask"
+              @editTask="openEditTaskModal"
+          />
+          <li v-if="upcomingTasks.length === 0" class="list-group-item text-muted">
+            {{ $t('dashboard.noUpcomingTasks') }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="tasks-section mb-4">
+        <h4>{{ $t('dashboard.overdueTasks') }}</h4>
+        <ul class="list-group">
+          <TodoItem
+              v-for="task in overdueTasks"
+              :key="task.id"
+              :task="task"
+              @toggleDone="toggleTaskCompletion"
+              @deleteTask="deleteTask"
+              @editTask="openEditTaskModal"
+          />
+          <li v-if="overdueTasks.length === 0" class="list-group-item text-muted">
+            {{ $t('dashboard.noOverdueTasks') }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="tasks-section">
+        <h4>{{ $t('dashboard.latestTasks') }}</h4>
+        <ul class="list-group">
+          <TodoItem
+              v-for="task in latestTasks"
+              :key="task.id"
+              :task="task"
+              @toggleDone="toggleTaskCompletion"
+              @deleteTask="deleteTask"
+              @editTask="openEditTaskModal"
+          />
+          <li v-if="latestTasks.length === 0" class="list-group-item text-muted">
+            {{ $t('dashboard.noLatestTasks') }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Modal dodawania/edycji -->
+      <AddTaskModal
+          v-if="isAddTaskModalVisible"
+          :taskToEdit="taskToEdit"
+          @taskSaved="onTaskSaved"
+          @closed="closeModal"
+      />
+    </main>
+  </div>
+</template>
+
 <style scoped>
-.text-decoration-line-through {
-  text-decoration: line-through;
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-background) !important;
+  color: var(--color-text);
+}
+
+.dashboard-main {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.dashboard-header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.dashboard-stats .stat-card {
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border);
+  padding: 15px;
+  margin-right: 10px;
+  border-radius: 8px;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.tasks-section {
+  margin-bottom: 20px;
+}
+
+.tasks-section h4 {
+  border-bottom: 1px solid var(--color-text) !important;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  color: var(--color-heading);
+}
+
+.list-group-item {
+  background-color: var(--color-background-soft);
+  color: var(--color-text) !important;
+  border-color: var(--color-border);
 }
 </style>

@@ -13,6 +13,12 @@ const allTasks = computed(() => taskStore.allTasks);
 
 const today = new Date();
 
+const fetchTasks = async () => {
+  await taskStore.fetchMyTasks();
+};
+
+const taskToEdit = ref(null);
+
 const { t, locale } = useI18n();
 
 const initialPageToday = {
@@ -25,22 +31,22 @@ const calendarAttributes = computed(() => {
 
   return tasksWithDueDate.map(task => {
     const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
-
+      console.log(`Task ${task.id} completed:`, task.completed);
     if (taskDueDate && !isNaN(taskDueDate.getTime())) {
       let color = 'blue';
       const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       const taskDayStart = new Date(taskDueDate.getFullYear(), taskDueDate.getMonth(), taskDueDate.getDate());
 
-      if (task.done) {
-        color = 'green';
-      } else {
 
-        if (taskDayStart < todayStart) {
-          color = 'red';
-        } else if (taskDayStart.getTime() === todayStart.getTime()) {
-          color = 'yellow';
-        }
 
+      if (taskDayStart < todayStart) {
+        color = 'red';
+      } else if (taskDayStart.getTime() === todayStart.getTime()) {
+        color = 'yellow';
+      }
+
+      if (task.completed){
+        color = 'green'
       }
 
       const year = taskDueDate.getFullYear();
@@ -104,7 +110,12 @@ const selectedDayFormatted = computed(() => {
   }
 });
 const toggleTaskDone = (taskId) => {
-  taskStore.toggleTaskDone(taskId);
+  taskStore.toggleTaskCompletion(taskId);
+};
+
+const handleEditTask = (task) => {
+  console.log("TaskListView: Otrzymano zadanie do edycji:", task);
+  taskToEdit.value = task;
 };
 
 const deleteTask = (taskId) => {
@@ -145,6 +156,7 @@ selectedDay.value = today;
               :task="task"
               @toggleDone="toggleTaskDone"
               @deleteTask="deleteTask"
+              @editTask="handleEditTask"
           />
         </TransitionGroup>
         <div v-if="selectedDayTasks.length === 0" class="no-tasks-for-day-message text-muted text-center mt-3">
@@ -160,7 +172,11 @@ selectedDay.value = today;
 
   </div>
 
-  <AddTaskModal @taskAdded="addTask" />
+  <AddTaskModal
+      :taskToEdit="taskToEdit"
+      @taskSaved="fetchTasks"
+      @closed="taskToEdit = null"
+  />
 
 </template>
 

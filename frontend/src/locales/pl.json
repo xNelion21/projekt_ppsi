@@ -4,6 +4,7 @@
   },
   "navigation": {
     "addTask": "Dodaj Zadanie",
+    "dashboard": "Panel",
     "inbox": "Skrzynka",
     "today": "Dzisiaj",
     "upcoming": "Nadchodzące",
@@ -14,6 +15,22 @@
     "settings": "Ustawienia",
     "logout": "Wyloguj"
   },
+
+  "dashboard": {
+    "welcome": "Witaj, {name}!",
+    "logout": "Wyloguj",
+    "allTasks": "Wszystkie zadania",
+    "completed": "Ukończone",
+    "overdue": "Zaległe",
+    "addNewTask": "Dodaj nowe zadanie",
+    "upcomingTasks": "Nadchodzące zadania",
+    "noUpcomingTasks": "Brak nadchodzących zadań.",
+    "overdueTasks": "Zaległe zadania",
+    "noOverdueTasks": "Brak zaległych zadań.",
+    "latestTasks": "Ostatnio dodane zadania",
+    "noLatestTasks": "Brak nowych zadań."
+  },
+
   "tasks": {
     "addTask": "Dodaj nowe zadanie",
     "addTaskName": "Tytuł",
@@ -103,6 +120,42 @@
       "errorMessageGeneric": "Wystąpił błąd podczas zapisu. Sprawdź konsolę."
     }
   },
+
+  "help": {
+    "title": "Centrum Pomocy",
+    "intro": "Witaj w Centrum Pomocy Taskify! Tutaj znajdziesz odpowiedzi na najczęściej zadawane pytania dotyczące korzystania z naszej aplikacji.",
+    "sections": {
+      "gettingStarted": {
+        "title": "Pierwsze kroki",
+        "content": "Aby zacząć korzystać z Taskify, zaloguj się na swoje konto. Jeśli go nie masz, możesz łatwo się zarejestrować. Po zalogowaniu, Twoja skrzynka odbiorcza będzie gotowa na pierwsze zadania."
+      },
+      "addTask": {
+        "title": "Dodawanie nowego zadania",
+        "content": "Kliknij przycisk 'Dodaj zadanie' w panelu bocznym. W oknie dialogowym możesz wprowadzić tytuł zadania, opis, dodatkową treść, termin wykonania oraz przypisać je do innych użytkowników. Tytuł jest jedynym wymaganym polem."
+      },
+      "navigation": {
+        "title": "Nawigacja po aplikacji",
+        "inbox": "Skrzynka odbiorcza",
+        "inboxDesc": "Tutaj znajdziesz wszystkie swoje zadania, które nie zostały jeszcze ukończone i nie mają przypisanego konkretnego terminu 'dziś' lub 'nadchodzące'.",
+        "today": "Dziś",
+        "todayDesc": "Wyświetla zadania, które mają termin wykonania na dziś. Idealne do szybkiego przeglądu priorytetów dnia.",
+        "upcoming": "Nadchodzące",
+        "upcomingDesc": "Zawiera zadania z terminami wykonania w przyszłości, pozwalając na planowanie z wyprzedzeniem.",
+        "completed": "Ukończone",
+        "completedDesc": "Lista wszystkich zadań, które oznaczyłeś jako wykonane. Możesz je tutaj przeglądać i, w razie potrzeby, oznaczyć jako nieukończone.",
+        "calendar": "Kalendarz",
+        "calendarDesc": "Widok kalendarza, który pozwala na przeglądanie zadań przypisanych do konkretnych dni. Pomaga wizualizować swój harmonogram."
+      },
+      "settings": {
+        "title": "Ustawienia i profil",
+        "content": "W sekcji 'Ustawienia' możesz zarządzać swoim pseudonimem, preferencjami językowymi, motywem aplikacji (jasny/ciemny), wiekiem i płcią. Sekcja 'Profil' pozwala na zmianę zdjęcia profilowego i przeglądanie podstawowych danych konta."
+      }
+    },
+    "contactUs": "Jeśli potrzebujesz dalszej pomocy, skontaktuj się z nami pod adresem"
+  },
+
+
+
   "common": {
     "language": "Język"
   }

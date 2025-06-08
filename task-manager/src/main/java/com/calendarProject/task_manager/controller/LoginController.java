@@ -13,9 +13,6 @@ public class LoginController {
     @GetMapping("/index")
     public String home(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/loginpage"; // Jeśli nie ma sesji, przekieruj na stronę logowania Springa
-        }
         model.addAttribute("user", user);
         return "index"; // Zwraca widok "index" (np. index.html z Thymeleaf)
     }

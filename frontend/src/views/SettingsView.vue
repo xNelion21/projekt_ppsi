@@ -6,11 +6,10 @@
 
     <form @submit.prevent="saveAllSettings" class="mt-4">
       <div class="mb-3 text-center">
-        <label for="profileImage" class="form-label d-block">{{ t('zdjęcie profilowe') }}</label>
         <img
             :src="formState.profileImageUrl || defaultProfileImage"
             alt="Zdjęcie profilowe"
-            class="profile-image-preview img-fluid mb-2"
+            class="profile-image-preview img-fluid mb-5"
             @error="handleImagePreviewError"
         />
         <input type="file" id="profileImage" @change="handleImageUpload" class="form-control" accept="image/*" />
@@ -158,7 +157,7 @@ const formatGender = (genderKey) => {
   const genders = {
     male: 'Mężczyzna',
     female: 'Kobieta',
-    panzerkampfwagenii: 'Inna', // Zostawiam dla zgodności z Twoim modelem
+    panzerkampfwagenii: 'Inna',
   };
   return genders[genderKey.toLowerCase()] || genderKey;
 };
@@ -167,9 +166,9 @@ const formatLanguage = (langKey) => {
   if (!langKey) return 'Nie ustawiono';
   const languages = {
     pl: 'Polski',
-    'pl-pl': 'Polski', // Zapewnij zgodność z 'pl-PL' z Twojego DTO
+    'pl-pl': 'Polski',
     en: 'English',
-    'en-us': 'English', // Zapewnij zgodność z 'en-US' z Twojego DTO
+    'en-us': 'English',
   };
   return languages[langKey.toLowerCase()] || langKey;
 };
@@ -198,7 +197,6 @@ const saveAllSettings = async () => {
     gender: formState.gender === '' ? null : formState.gender,
   };
 
-  // Upewnij się, że używasz userStore.user do porównań
   let settingsActuallyChanged =
       settingsDataPayload.nickname !== userStore.user.nickname ||
       settingsDataPayload.languagePreference !== userStore.user.languagePreference ||
@@ -208,13 +206,10 @@ const saveAllSettings = async () => {
       profileDataPayload.age !== userStore.user.age ||
       profileDataPayload.gender !== userStore.user.gender;
 
-  // Specjalne sprawdzenie dla null/undefined w wieku i płci
   if (formState.age === null && (userStore.user.age === undefined || userStore.user.age === null)) {
-    // Jeśli oba są null/undefined, nie ma zmiany, więc ustaw na false
     profileActuallyChanged = profileActuallyChanged && (profileDataPayload.age !== null);
   }
   if (formState.gender === '' && (userStore.user.gender === undefined || userStore.user.gender === null)) {
-    // Jeśli oba są null/undefined, nie ma zmiany, więc ustaw na false
     profileActuallyChanged = profileActuallyChanged && (profileDataPayload.gender !== null);
   }
 
@@ -222,7 +217,6 @@ const saveAllSettings = async () => {
   let overallSuccess = true;
 
   if (settingsActuallyChanged) {
-    // Wywołaj akcję updateSettings z userStore
     const settingsUpdateSuccess = await userStore.updateSettings(settingsDataPayload);
     if (!settingsUpdateSuccess) {
       overallSuccess = false;
@@ -247,7 +241,6 @@ const saveAllSettings = async () => {
     if (userStore.error) {
       overallSuccess = false;
     } else {
-      // Wywołaj akcję updateProfile z userStore
       const profileUpdateSuccess = await userStore.updateProfile(profileDataPayload);
       if (!profileUpdateSuccess) {
         overallSuccess = false;
@@ -258,13 +251,12 @@ const saveAllSettings = async () => {
   if (overallSuccess) {
     if (settingsActuallyChanged || profileActuallyChanged) {
       successMessage.value = t('settings.form.successMessageSaved');
-      syncFormWithStore(); // Ponowna synchronizacja po zapisie
+      syncFormWithStore();
     } else {
       successMessage.value = t('settings.form.successMessageNoChange');
     }
   } else {
-    // Jeśli userStore.error jest już ustawione przez updateSettings/updateProfile,
-    // nie nadpisuj go ogólnym komunikatem.
+
     if (!userStore.error) {
       successMessage.value = t('settings.form.errorMessageGeneric');
     }
@@ -278,8 +270,8 @@ const saveAllSettings = async () => {
 
 <style scoped>
 .profile-image-preview {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #e9ecef;
@@ -289,13 +281,13 @@ const saveAllSettings = async () => {
 .form-select {
   background-color: var(--color-background-soft);
   color: var(--color-text);
-  border: none;
+  border: 1px var(--color-border) solid;
 }
 
 .form-control{
   background-color: var(--color-background-soft);
   color: var(--color-text);
-  border: none;
+  border: 1px var(--color-border) solid;
 }
 
 label {

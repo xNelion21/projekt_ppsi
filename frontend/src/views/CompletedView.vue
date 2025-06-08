@@ -1,12 +1,19 @@
 <script setup>
 import { useTaskStore } from '../stores/taskStore';
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n'; // <-- Dodany import useI18n
+import {computed, ref} from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import TodoItem from '../components/ToDoItem.vue';
+import AddTaskModal from "@/components/AddTaskModal.vue";
 
 const taskStore = useTaskStore();
 const { t } = useI18n();
+
+const fetchTasks = async () => {
+  await taskStore.fetchMyTasks();
+};
+
+const taskToEdit = ref(null);
 
 const tasks = computed(() => taskStore.completedTasks);
 
@@ -15,7 +22,12 @@ const taskCount = computed(() => {
 });
 
 const toggleTaskDone = (taskId) => {
-  taskStore.toggleTaskDone(taskId);
+  taskStore.toggleTaskCompletion(taskId);
+};
+
+const handleEditTask = (task) => {
+  console.log("TaskListView: Otrzymano zadanie do edycji:", task);
+  taskToEdit.value = task;
 };
 
 const deleteTask = (taskId) => {
@@ -47,6 +59,7 @@ const deleteTask = (taskId) => {
             :task="task"
             @toggleDone="toggleTaskDone"
             @deleteTask="deleteTask"
+            @editTask="handleEditTask"
         />
       </TransitionGroup>
       <div v-if="tasks.length === 0" class="no-tasks-message text-muted text-center">
@@ -54,6 +67,12 @@ const deleteTask = (taskId) => {
 
     </div>
   </div>
+
+  <AddTaskModal
+      :taskToEdit="taskToEdit"
+      @taskSaved="fetchTasks"
+      @closed="taskToEdit = null"
+  />
 
 </template>
 
@@ -99,8 +118,8 @@ const deleteTask = (taskId) => {
 
 .no-tasks-message {
   margin-top: 30px;
-  font-size: 1.2rem;
-  color: var(--color-text-soft) !important;
+  font-size: 1.5rem;
+  color: var(--color-text) !important;
 }
 
 .task-list-leave-active {

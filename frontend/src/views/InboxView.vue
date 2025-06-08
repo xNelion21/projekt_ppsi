@@ -5,6 +5,10 @@ import { computed, ref, onMounted } from 'vue';
 import TodoItem from '../components/ToDoItem.vue';
 import AddTaskModal from '../components/AddTaskModal.vue';
 
+const fetchTasks = async () => {
+  await taskStore.fetchMyTasks();
+};
+
 const taskStore = useTaskStore();
 const overdueTasks = computed(() => taskStore.overdueTasks || []);
 const remainingTasks = computed(() => taskStore.remainingInboxTasks || []);
@@ -15,8 +19,13 @@ const addTask = (newTaskData) => {
   taskStore.addTask(newTaskData);
 };
 
+const handleEditTask = (task) => {
+  console.log("TaskListView: Otrzymano zadanie do edycji:", task);
+  taskToEdit.value = task;
+};
+
 const toggleTaskDone = (taskId) => {
-  taskStore.toggleTaskDone(taskId);
+  taskStore.toggleTaskCompletion(taskId);
 };
 
 const deleteTask = (taskId) => {
@@ -49,6 +58,7 @@ const deleteTask = (taskId) => {
               :task="task"
               @toggleDone="toggleTaskDone"
               @deleteTask="deleteTask"
+              @editTask="handleEditTask"
           />
         </TransitionGroup>
       </div>
@@ -66,6 +76,7 @@ const deleteTask = (taskId) => {
               :task="task"
               @toggleDone="toggleTaskDone"
               @deleteTask="deleteTask"
+              @editTask="handleEditTask"
           />
         </TransitionGroup>
 
@@ -78,8 +89,11 @@ const deleteTask = (taskId) => {
     </div>
   </div>
 
-  <AddTaskModal @taskAdded="addTask" />
-
+  <AddTaskModal
+      :taskToEdit="taskToEdit"
+      @taskSaved="fetchTasks"
+      @closed="taskToEdit = null"
+  />
 </template>
 
 <style scoped>
@@ -137,7 +151,7 @@ const deleteTask = (taskId) => {
 .no-tasks-message {
   margin-top: 30px;
   font-size: 1.5rem;
-  color: #999;
+  color: var(--color-text) !important;
 }
 
 .task-list-leave-active {
