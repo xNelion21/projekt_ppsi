@@ -1,9 +1,8 @@
 package com.calendarProject.task_manager.controller;
-import com.calendarProject.task_manager.dto.UserSummaryDTO;
-import com.calendarProject.task_manager.dto.LoginRequest;
-import com.calendarProject.task_manager.dto.LoginResponse;
+import com.calendarProject.task_manager.dto.*;
 import com.calendarProject.task_manager.model.User;
 import com.calendarProject.task_manager.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired; // Można pominąć, jeśli jest tylko jeden konstruktor
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,18 +11,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
+import com.calendarProject.task_manager.service.UserService;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository; // Dobrą praktyką jest uczynienie pola finalnym, jeśli jest wstrzykiwane przez konstruktor
+    private final UserRepository userRepository;
+    private final UserService userService;
 
-    @Autowired // Adnotacja @Autowired jest opcjonalna, jeśli klasa ma tylko jeden konstruktor (od Spring 4.3)
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository) { // Dodano UserRepository jako parametr
+    @Autowired
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, UserService userService) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository; // Teraz Spring wstrzyknie tutaj poprawną instancję
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -84,7 +85,26 @@ public class AuthController {
         userDto.setAge(currentUser.getAge());
         userDto.setGender(currentUser.getGender());
         userDto.setProfileImageUrl(currentUser.getProfileImageUrl());
-        userDto.setRoles(currentUser.getRoles()); // Zakładając, że getRoles() zwraca Set<String>
+        userDto.setRoles(currentUser.getRoles());
         return userDto;
+    }
+
+
+    @PostMapping("/request-password-reset")
+    public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetRequestDto requestDto) {
+        userService.initiatePasswordReset(requestDto.getEmail());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetDto resetDto) {
+        try {
+
+            userService.completePasswordReset(resetDto.getToken(), resetDto.getNewPassword());
+            return ResponseEntity.ok("Twoje hasło zostało pomyślnie zmienione.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

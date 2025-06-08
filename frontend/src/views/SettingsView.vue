@@ -6,7 +6,7 @@
 
     <form @submit.prevent="saveAllSettings" class="mt-4">
       <div class="mb-3 text-center">
-        <label for="profileImage" class="form-label d-block">{{ t('settings.form.profileImageLabel') }}</label>
+        <label for="profileImage" class="form-label d-block">{{ t('zdjęcie profilowe') }}</label>
         <img
             :src="formState.profileImageUrl || defaultProfileImage"
             alt="Zdjęcie profilowe"
@@ -159,7 +159,6 @@ const formatGender = (genderKey) => {
     male: 'Mężczyzna',
     female: 'Kobieta',
     panzerkampfwagenii: 'Inna', // Zostawiam dla zgodności z Twoim modelem
-    other: 'Inna', // Dodaję 'other' jako ogólną kategorię, jeśli 'PanzerkampfwagenII' jest traktowane jako 'inna'
   };
   return genders[genderKey.toLowerCase()] || genderKey;
 };

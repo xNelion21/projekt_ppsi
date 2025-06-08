@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @Column(name = "role")
     private Set<String> roles = new HashSet<>(); // Przechowywanie ról użytkownika
 
-    @ManyToMany(mappedBy = "assignedUsers", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "assignedUsers", fetch = FetchType.EAGER)
     private Set<Task> assignedTasks = new HashSet<>();
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Task> createdTasks = new HashSet<>();

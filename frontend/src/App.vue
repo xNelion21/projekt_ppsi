@@ -107,7 +107,7 @@ onMounted(async () => {
     console.log('App.vue: User is authenticated:', userStore.user.email);
     await taskStore.fetchMyTasks();
 
-    if (router.currentRoute.value.name === 'loginpage' || router.currentRoute.value.name === 'register' || router.currentRoute.value.path === '/app/' || router.currentRoute.value.path === '/app' || router.currentRoute.value.path === '/') {
+    if (router.currentRoute.value.name === 'loginpage' || router.currentRoute.value.name === 'register' || router.currentRoute.value.path === '/' || router.currentRoute.value.path === '/' || router.currentRoute.value.path === '/') {
       console.log('App.vue: Użytkownik zalogowany, przekierowuję na /inbox.');
       router.push({ name: 'inbox' });
     }
@@ -233,6 +233,7 @@ html.dark-mode {
   background-color: var(--color-background);
   color: var(--color-text);
   padding: 15px !important;
+
 }
 
 .btn-sidebar {
@@ -338,4 +339,23 @@ html.dark-mode {
 main {
   padding-top: 0;
 }
+
+
+.main-content-col {
+  display: flex;
+  flex-direction: column; /* Układamy elementy (przycisk i treść) jeden pod drugim */
+  height: 100vh;         /* Kolumna zajmuje 100% wysokości okna przeglądarki */
+}
+
+/* 2. Upewniamy się, że kontener z przyciskiem do chowania menu nie rozciąga się */
+.main-content-col > .simple-toggle-button-container {
+  flex-shrink: 0; /* Zapobiega kurczeniu się tego elementu */
+}
+
+/* 3. Mówimy głównemu obszarowi <main>, aby rósł i pozwalał się przewijać */
+.main-content-col > main {
+  flex-grow: 1;       /* Pozwala temu elementowi rosnąć i wypełnić całą dostępną przestrzeń */
+  overflow-y: auto;   /* Włącza pionowe przewijanie, gdy treść się nie mieści */
+}
+
 </style>

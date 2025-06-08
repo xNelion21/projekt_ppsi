@@ -9,7 +9,7 @@ import DashboardView from '@/views/DashboardView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import ProfileView from '@/views/ProfileView.vue';
 
-
+import ResetPasswordView from '../views/ResetPasswordView.vue'
 
 const routes = [
     {
@@ -22,6 +22,12 @@ const routes = [
         name: 'inbox',
         component: InboxView
     },
+    {
+        path: '/reset-password', // <-- DODAJ NOWĄ ŚCIEŻKĘ
+        name: 'reset-password',
+        component: ResetPasswordView
+    },
+
     {
         path: '/today',
         name: 'today',
